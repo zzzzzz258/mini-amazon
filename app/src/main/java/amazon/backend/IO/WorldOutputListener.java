@@ -14,10 +14,6 @@ public class WorldOutputListener {
     WorldIO worldIO;
     AckManager ackManager;
 
-    public WorldOutputListener(WorldIO worldIO) {
-        this.worldIO = worldIO;
-    }
-
     public WorldOutputListener(WorldIO worldIO, AckManager ackManager) {
         this.worldIO = worldIO;
         this.ackManager = ackManager;
@@ -27,7 +23,7 @@ public class WorldOutputListener {
         WorldAmazon.AResponses.Builder responseBuilder = WorldAmazon.AResponses.newBuilder();
         worldIO.receiveFromWorld(responseBuilder);
         WorldAmazon.AResponses responses = responseBuilder.build();
-        //System.out.println(responses);
+        System.out.println(responses);
         dispatchPurchased(responses.getArrivedList());
         dispathAcks(responses.getAcksList());
         // TODO: dispatch others
@@ -42,8 +38,7 @@ public class WorldOutputListener {
 
     private void dispathAcks(List<Long> acks) {
         for (Long ack: acks) {
-            System.out.println(ack);
-            //TODO: do real dispatch
+            ackManager.doAck(ack);
         }
     }
 }

@@ -53,5 +53,7 @@ public class WorldMessageDao {
 
         transaction.commit();
         session.close();
+
+        System.out.println("Ack: " + seqNum);
     }
 }

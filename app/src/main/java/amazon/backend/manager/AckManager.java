@@ -1,54 +1,44 @@
 package amazon.backend.manager;
 
+import amazon.backend.service.AckWorldCommandService;
 import org.hibernate.SessionFactory;
 
 import java.util.Queue;
+import java.util.concurrent.Executors;
+import java.util.concurrent.ThreadPoolExecutor;
 
 /**
- * Class to manage the ack message from world.
+ * Class to manage the ack message from world by managing a thread pool.
  * i.e. Offer new ack seq number into queue, then get it from queue and update in database
+ * Following singleton design pattern
  */
-public class AckManager implements Runnable {
+public class AckManager {
+
+    private static AckManager INSTANCE;
 
     private SessionFactory sessionFactory;
-    private Queue<Long> waitingQueue;
     private final Object lock = new Object();
 
-    public AckManager(SessionFactory sessionFactory) {
+    ThreadPoolExecutor threadPoolExecutor;
+
+    private AckManager(SessionFactory sessionFactory) {
         this.sessionFactory = sessionFactory;
+        this.threadPoolExecutor = (ThreadPoolExecutor) Executors.newFixedThreadPool(50);
+    }
+
+    public static synchronized AckManager getInstance(SessionFactory sessionFactory) {
+        if (INSTANCE == null) {
+            INSTANCE = new AckManager(sessionFactory);
+        }
+        return INSTANCE;
     }
 
     /**
-     * Offer a new seqnum to waiting queue. This should be thread-safe
+     * Do acknowledgement to given sequence
      * @param seq
      */
-    public void offerAck(long seq) {
-        synchronized (lock) {
-            waitingQueue.offer(seq);
-        }
+    public synchronized void doAck(long seq) {
+        threadPoolExecutor.execute(new AckWorldCommandService(sessionFactory, seq));
     }
 
-    /**
-     * Get ack sequence number from waiting queue
-     * @return -1 is waiting queue is empty
-     */
-    public long getAck() {
-        long seq = -1;
-        synchronized (lock) {
-            if (!waitingQueue.isEmpty()) {
-                seq = waitingQueue.poll();
-            }
-        }
-        return seq;
-    }
-
-    /**
-     * This Class continuously check the waitingQueue to update the acked message
-     */
-    @Override
-    public void run() {
-        while (true) {
-            // TODO call DAO to update database
-        }
-    }
 }

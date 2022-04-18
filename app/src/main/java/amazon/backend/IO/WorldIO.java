@@ -95,13 +95,15 @@ public class WorldIO {
      * @param warehouseId
      * @param products
      */
-    public void sendAPurchaseMore(int warehouseId, List<Product> products) throws IOException {
+    public long sendAPurchaseMore(int warehouseId, List<Product> products) throws IOException {
         WorldAmazon.APurchaseMore.Builder builder = WorldAmazon.APurchaseMore.newBuilder().setWhnum(warehouseId);
         products.stream().forEach(p -> builder.addThings(createAProduct(p)));
-        builder.setSeqnum(getSeqNum());
-        WorldAmazon.ACommands aCommands =createACommands(List.of(builder.build()), null);
+        long tSeqNum = getSeqNum();
+        builder.setSeqnum(tSeqNum);
+        WorldAmazon.ACommands aCommands = createACommands(List.of(builder.build()), null);
         System.out.println(aCommands);
         sendToWorld(aCommands.toByteArray());
+        return tSeqNum;
     }
 
     /**
