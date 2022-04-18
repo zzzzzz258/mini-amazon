@@ -1,4 +1,4 @@
-package amazon.backend.models;
+package amazon.backend.model;
 
 import java.util.List;
 

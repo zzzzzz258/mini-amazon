@@ -1,7 +1,7 @@
 package amazon.backend.IO;
 
-import amazon.backend.models.Product;
-import amazon.backend.models.WareHouse;
+import amazon.backend.model.Product;
+import amazon.backend.model.WareHouse;
 import amazon.backend.protobuf.WorldAmazon;
 import com.google.protobuf.CodedInputStream;
 import com.google.protobuf.CodedOutputStream;
@@ -99,7 +99,9 @@ public class WorldIO {
         WorldAmazon.APurchaseMore.Builder builder = WorldAmazon.APurchaseMore.newBuilder().setWhnum(warehouseId);
         products.stream().forEach(p -> builder.addThings(createAProduct(p)));
         builder.setSeqnum(getSeqNum());
-        sendToWorld(createACommands(List.of(builder.build()), null).toByteArray());
+        WorldAmazon.ACommands aCommands =createACommands(List.of(builder.build()), null);
+        System.out.println(aCommands);
+        sendToWorld(aCommands.toByteArray());
     }
 
     /**

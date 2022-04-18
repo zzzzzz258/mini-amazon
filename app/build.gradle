@@ -26,6 +26,10 @@ dependencies {
 
     // google proto buf
     implementation 'com.google.protobuf:protobuf-java:3.20.1-rc-1'
+
+    // hibernate
+    implementation 'org.hibernate:hibernate-core:6.0.0.Final'
+    implementation 'org.postgresql:postgresql:42.3.4'
 }
 
 application {

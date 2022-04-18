@@ -1,4 +1,4 @@
-package amazon.backend.models;
+package amazon.backend.model;
 
 public class WareHouse {
   private int id;

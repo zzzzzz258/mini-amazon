@@ -3,9 +3,14 @@
  */
 package amazon.backend;
 
+import org.hibernate.SessionFactory;
+import org.hibernate.cfg.Configuration;
+
 public class App {
 
-    public static void main(String[] args) {
+    public static SessionFactory sessionFactory;
 
+    public static void main(String[] args) {
+        sessionFactory = new Configuration().configure().buildSessionFactory();
     }
 }

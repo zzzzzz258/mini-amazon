@@ -1,8 +1,7 @@
 package amazon.backend.IO;
 
-import amazon.backend.models.Product;
+import amazon.backend.model.Product;
 import amazon.backend.simpleups.UpsWorldIO;
-import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 
 import java.io.IOException;

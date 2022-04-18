@@ -1,4 +1,4 @@
-package amazon.backend.models;
+package amazon.backend.model;
 
 public class Product {
     private int id;

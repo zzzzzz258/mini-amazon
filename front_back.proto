@@ -1,0 +1,38 @@
+syntax = "proto2";
+
+message Product{
+  required int64 iid = 1;
+  required string description = 2;
+  required int32 count = 3;
+}
+
+message PurchasedOrder{
+  required int32 pid = 1;
+  repeated Product products = 2;
+  required int32 x = 3;
+  required int32 y = 4;
+}
+
+message QueryStatus{
+  required int32 pid = 1;  
+}
+
+message OrderStatus{
+  required int32 pid = 1;
+  required string status = 2;
+  optional string trackingNum = 3;
+}
+
+message AccountMatch{
+  required bool isMatched = 1;
+}
+
+message FBMessage{
+  repeated PurchasedOrder orders = 1;
+  repeated QueryStatus status = 2;
+}
+
+message BFMessage{
+  repeated OrderStatus status = 1;
+  repeated AccountMatch match = 2;
+}
