@@ -32,7 +32,7 @@ public class WorldOutputListener {
     private void dispatchPurchased(List<WorldAmazon.APurchaseMore> aPurchaseMoreList) {
         for (WorldAmazon.APurchaseMore aPurchaseMore: aPurchaseMoreList) {
             // TODO: do real dispatch
-            System.out.println(aPurchaseMore);
+
         }
     }
 
