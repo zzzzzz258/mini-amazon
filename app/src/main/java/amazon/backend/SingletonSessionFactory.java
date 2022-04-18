@@ -1,5 +1,7 @@
 package amazon.backend;
 
+import amazon.backend.model.Package;
+import amazon.backend.model.Product;
 import org.hibernate.SessionFactory;
 import org.hibernate.cfg.Configuration;
 
@@ -9,7 +11,11 @@ public class SingletonSessionFactory {
 
     public static synchronized SessionFactory getSessionFactory() {
         if (factory == null) {
-            factory = new Configuration().configure().buildSessionFactory();
+            factory = new Configuration()
+                    .configure()
+                    .addAnnotatedClass(Product.class)
+                    .addAnnotatedClass(Package.class)
+                    .buildSessionFactory();
         }
         return factory;
     }

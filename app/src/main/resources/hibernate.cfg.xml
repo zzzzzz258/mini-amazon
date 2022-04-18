@@ -29,5 +29,6 @@
         <!-- List of XML mapping files -->
         <mapping resource = "WorldMessage.hbm.xml"/>
 
+
     </session-factory>
 </hibernate-configuration>

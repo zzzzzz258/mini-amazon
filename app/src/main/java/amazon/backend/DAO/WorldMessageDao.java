@@ -9,7 +9,6 @@ import org.hibernate.Transaction;
 public class WorldMessageDao {
 
     private SessionFactory factory;
-    //private final String update = "update world_message set acked = true where sequence_num =:seqNum";
 
     public WorldMessageDao(SessionFactory factory) {
         this.factory = factory;
@@ -37,6 +36,37 @@ public class WorldMessageDao {
         finally {
             session.close();
         }
+    }
+
+    /**
+     * Select one by its sequence number
+     * @param seqNum
+     * @return null if target not found
+     */
+    public WorldMessage getOne(long seqNum) {
+        Session session = factory.openSession();
+        Transaction transaction = session.beginTransaction();
+
+        WorldMessage result = session.get(WorldMessage.class, seqNum);
+
+        transaction.commit();
+        session.close();
+
+        return result;
+    }
+
+    /**
+     * Method to delete one worldMessage by its seqNUm
+     * @param seqNum
+     */
+    public void deleteOne(long seqNum) {
+        Session session = factory.openSession();
+        Transaction transaction = session.beginTransaction();
+
+        session.remove(new WorldMessage(seqNum));
+
+        transaction.commit();
+        session.close();
     }
 
     /**

@@ -36,7 +36,7 @@ public class WebIO {
      * @param data sending data in byte array
      * @throws IOException
      */
-    public void sendToWorld(byte[] data) throws IOException {
+    public synchronized void sendToWorld(byte[] data) throws IOException {
         CodedOutputStream cos = CodedOutputStream.newInstance(outputStream);
         cos.writeUInt32NoTag(data.length);
         cos.writeRawBytes(data);
@@ -49,7 +49,7 @@ public class WebIO {
      * @param <T>
      * @throws IOException
      */
-    public <T extends GeneratedMessageV3.Builder<?>> void receiveFromWorld(T responseBuilder) throws IOException {
+    public synchronized <T extends GeneratedMessageV3.Builder<?>> void receiveFromWorld(T responseBuilder) throws IOException {
         CodedInputStream cis = CodedInputStream.newInstance(inputStream);
         int size = cis.readRawVarint32();
         int oldLimit = cis.pushLimit(size);
