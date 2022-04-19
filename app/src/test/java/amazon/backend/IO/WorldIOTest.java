@@ -40,7 +40,7 @@ class WorldIOTest {
         System.out.println(uConnected.getWorldid());
 
         // connect to the world using given id with my amazon
-        amazonIO = new WorldIO(ip, amazonPort, worldId);
+        amazonIO =  WorldIO.getInstance(ip, amazonPort, worldId);
     }
 
     @Test

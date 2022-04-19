@@ -14,15 +14,13 @@ public class WebOutputListener {
 
     public void receive() throws IOException {
         FrontBack.FBMessage.Builder builder = FrontBack.FBMessage.newBuilder();
-        webIO.receiveFromWorld(builder);
+        webIO.receiveFromWeb(builder);
         FrontBack.FBMessage fbMessage = builder.build();
         System.out.println("From Web:\n" + fbMessage);
-        dispatchPurchasedOrder(fbMessage.getOrdersList());
+        dispatchOrder(fbMessage);
     }
 
-    private void dispatchPurchasedOrder(List<FrontBack.PurchasedOrder> purchasedOrderList) {
-        for (FrontBack.PurchasedOrder purchasedOrder: purchasedOrderList) {
-            // TODO
-        }
+    private void dispatchOrder(FrontBack.FBMessage order) {
+        // TODO
     }
 }

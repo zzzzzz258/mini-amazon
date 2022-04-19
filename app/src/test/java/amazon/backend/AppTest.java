@@ -49,7 +49,7 @@ class AppTest {
         System.out.println(uConnected);
 
         // connect to the world using given id with my amazon
-        amazonIO = new WorldIO(ip, amazonPort, worldId);
+        amazonIO = WorldIO.getInstance(ip, amazonPort, worldId);
 
         worldOutputListener = new WorldOutputListener(amazonIO, ackManager);
     }

@@ -1,20 +1,23 @@
 package amazon.backend.model;
 
-import jakarta.persistence.Column;
-import jakarta.persistence.Entity;
-import jakarta.persistence.Id;
+import jakarta.persistence.*;
 import org.checkerframework.checker.units.qual.C;
 
 import java.util.List;
 
 @Entity
+@Table(name = "package")
 public class Package {
     @Id
-    private long id;
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "id")
+    private Long packageId;
     @Column(name = "warehouse_id")
     private int warehouseId;
     @Column(name = "order_id")
     private int orderId;
+    private int x;
+    private int y;
     @Column(name = "pack_seq")
     private Long packSeq;
     @Column(name="is_packed")
@@ -27,18 +30,23 @@ public class Package {
     public Package() {
     }
 
-    public Package(long id, int warehouseId, int orderId) {
-        this.id = id;
+    public Package(int warehouseId, int orderId, int x, int y) {
         this.warehouseId = warehouseId;
         this.orderId = orderId;
+        this.x = x;
+        this.y = y;
     }
 
-    public long getId() {
-        return id;
+    public Package(Long packageId) {
+        this.packageId = packageId;
     }
 
-    public void setId(long id) {
-        this.id = id;
+    public Long getPackageId() {
+        return packageId;
+    }
+
+    public void setPackageId(Long packageId) {
+        this.packageId = packageId;
     }
 
     public int getWarehouseId() {
@@ -55,6 +63,22 @@ public class Package {
 
     public void setOrderId(int orderId) {
         this.orderId = orderId;
+    }
+
+    public int getX() {
+        return x;
+    }
+
+    public void setX(int x) {
+        this.x = x;
+    }
+
+    public int getY() {
+        return y;
+    }
+
+    public void setY(int y) {
+        this.y = y;
     }
 
     public Long getPackSeq() {

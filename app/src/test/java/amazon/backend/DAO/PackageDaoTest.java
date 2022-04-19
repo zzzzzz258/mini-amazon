@@ -14,14 +14,11 @@ class PackageDaoTest {
         SessionFactory sessionFactory = SingletonSessionFactory.getSessionFactory();
         PackageDao packageDao = new PackageDao(sessionFactory);
 
-        int id = 90;
-
-        packageDao.deleteOne(id);
-
-        Package p = new Package(id, 23, 22);
-        packageDao.addOne(p);
+        Package p = new Package(23, 22, 10, 10);
+        long id = packageDao.addOne(p);
         Package pig = packageDao.getOne(id);
 
+        System.out.println(id);
         assertEquals(23, pig.getWarehouseId());
     }
 }

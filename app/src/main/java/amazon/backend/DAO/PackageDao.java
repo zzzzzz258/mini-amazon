@@ -17,14 +17,20 @@ public class PackageDao {
      * Insert a new package
      * @param target
      */
-    public void addOne(Package target) {
+    public long addOne(Package target) {
         Session session = factory.openSession();
         Transaction transaction = session.beginTransaction();
 
         session.persist(target);
-        transaction.commit();
+        session.flush();
+        session.evict(target);
 
+        transaction.commit();
         session.close();
+
+        long newId = target.getPackageId();
+
+        return newId;
     }
 
     /**
@@ -52,7 +58,7 @@ public class PackageDao {
         Session session = factory.openSession();
         Transaction transaction = session.beginTransaction();
 
-        Package p = new Package(id, 0, 0);
+        Package p = new Package(id);
         session.remove(p);
 
         transaction.commit();

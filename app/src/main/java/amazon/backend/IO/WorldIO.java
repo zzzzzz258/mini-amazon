@@ -13,6 +13,8 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 public class WorldIO {
+    private static WorldIO INSTANCE;
+
     private Socket socket;
     private OutputStream outputStream;
     private InputStream inputStream;
@@ -31,12 +33,22 @@ public class WorldIO {
         return outputStream;
     }
 
-    public WorldIO(String ip, int port, int worldId) throws IOException {
+    private WorldIO(String ip, int port, int worldId) throws IOException {
         socket = new Socket(ip, port);
         outputStream = socket.getOutputStream();
         inputStream = socket.getInputStream();
         connectToWorld(worldId);
         seqNum = 1;
+    }
+
+    public static synchronized WorldIO getInstance() {
+        if (INSTANCE == null) throw new IllegalStateException("Pass parameter to initialize WorldIO before get");
+        return INSTANCE;
+    }
+
+    public static synchronized WorldIO getInstance(String ip, int port, int world) throws IOException {
+        if (INSTANCE == null) INSTANCE = new WorldIO(ip, port, world);
+        return INSTANCE;
     }
 
     /**
@@ -191,7 +203,7 @@ public class WorldIO {
      * @param <T>
      * @throws IOException
      */
-    public synchronized  <T extends GeneratedMessageV3.Builder<?>> void receiveFromWorld(T responseBuilder) throws IOException {
+    public synchronized <T extends GeneratedMessageV3.Builder<?>> void receiveFromWorld(T responseBuilder) throws IOException {
         CodedInputStream cis = CodedInputStream.newInstance(inputStream);
         int size = cis.readRawVarint32();
         int oldLimit = cis.pushLimit(size);

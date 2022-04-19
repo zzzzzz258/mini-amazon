@@ -19,16 +19,14 @@ class ProductDaoTest {
         PackageDao packageDao = new PackageDao(factory);
         WorldMessageDao worldMessageDao = new WorldMessageDao(factory);
 
-        int packageId = 890;
+
         int productId = 998;
         int seqNum = 727;
 
         if (worldMessageDao.getOne(seqNum) == null) {
             worldMessageDao.addOne(new WorldMessage(seqNum));
         }
-        if (packageDao.getOne(packageId) == null) {
-            packageDao.addOne(new Package(packageId, 89, 80));
-        }
+        long packageId = packageDao.addOne(new Package(89, 80, 10, 10));
         // test getOne and deleteOne
         if (productDao.getOne(productId, packageId)!=null) {
             productDao.deleteOne(productId, packageId);
