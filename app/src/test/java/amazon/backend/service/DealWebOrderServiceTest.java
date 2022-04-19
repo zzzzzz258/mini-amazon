@@ -25,7 +25,7 @@ class DealWebOrderServiceTest {
         FrontBack.FBMessage order = builder.build();
 
         DealWebOrderService dealWebOrderService =
-                new DealWebOrderService(SingletonSessionFactory.getSessionFactory(), order);
+                new DealWebOrderService(order);
 
         // Cannot find a good way to test singleton, this is partly testing
         assertThrows(IllegalStateException.class, () -> dealWebOrderService.run());

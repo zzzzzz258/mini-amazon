@@ -16,20 +16,18 @@ public class AckManager {
 
     private static AckManager INSTANCE;
 
-    private SessionFactory sessionFactory;
-    private final Object lock = new Object();
-
     ThreadPoolExecutor threadPoolExecutor;
 
-    private AckManager(SessionFactory sessionFactory) {
-        this.sessionFactory = sessionFactory;
+    private AckManager() {
         this.threadPoolExecutor = (ThreadPoolExecutor) Executors.newFixedThreadPool(50);
     }
 
-    public static synchronized AckManager getInstance(SessionFactory sessionFactory) {
-        if (INSTANCE == null) {
-            INSTANCE = new AckManager(sessionFactory);
-        }
+    public static synchronized AckManager getInstance() {
+        return INSTANCE;
+    }
+
+    public static synchronized AckManager newInstance(SessionFactory sessionFactory) {
+        INSTANCE = new AckManager();
         return INSTANCE;
     }
 
@@ -38,7 +36,6 @@ public class AckManager {
      * @param seq
      */
     public synchronized void doAck(long seq) {
-        threadPoolExecutor.execute(new AckWorldCommandService(sessionFactory, seq));
+        threadPoolExecutor.execute(new AckWorldCommandService(seq));
     }
-
 }

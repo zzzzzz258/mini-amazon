@@ -1,15 +1,30 @@
 package amazon.backend.IO;
 
+import amazon.backend.manager.LogisticsManager;
 import amazon.backend.protobuf.FrontBack;
 
 import java.io.IOException;
 import java.util.List;
 
-public class WebOutputListener {
-    private WebIO webIO;
+public class WebOutputListener implements Runnable {
 
-    public WebOutputListener(WebIO webIO) {
+    private static WebOutputListener INSTANCE;
+
+    private WebIO webIO;
+    private LogisticsManager logisticsManager;
+
+    private WebOutputListener(WebIO webIO, LogisticsManager logisticsManager) {
         this.webIO = webIO;
+        this.logisticsManager = logisticsManager;
+    }
+
+    public static WebOutputListener getInstance() {
+        return INSTANCE;
+    }
+
+    public static synchronized WebOutputListener newInstance(WebIO webIO, LogisticsManager logisticsManager) {
+        INSTANCE = new WebOutputListener(webIO, logisticsManager);
+        return INSTANCE;
     }
 
     public void receive() throws IOException {
@@ -21,6 +36,17 @@ public class WebOutputListener {
     }
 
     private void dispatchOrder(FrontBack.FBMessage order) {
-        // TODO
+        logisticsManager.confirmOrder(order);
+    }
+
+    @Override
+    public void run() {
+        while (true) {
+            try {
+                receive();
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        }
     }
 }

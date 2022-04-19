@@ -15,11 +15,9 @@ import java.util.List;
 
 public class DealWebOrderService implements Runnable {
 
-    private SessionFactory sessionFactory;
     private FrontBack.FBMessage order;
 
-    public DealWebOrderService(SessionFactory sessionFactory, FrontBack.FBMessage order) {
-        this.sessionFactory = sessionFactory;
+    public DealWebOrderService(FrontBack.FBMessage order) {
         this.order = order;
     }
 
@@ -31,8 +29,8 @@ public class DealWebOrderService implements Runnable {
      */
     @Override
     public void run() {
-        PackageDao packageDao = new PackageDao(sessionFactory);
-        ProductDao productDao = new ProductDao(sessionFactory);
+        PackageDao packageDao = new PackageDao();
+        ProductDao productDao = new ProductDao();
 
         Package pkg = new Package(1, order.getPid(), order.getX(), order.getY());
         long packageId = packageDao.addOne(pkg);

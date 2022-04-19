@@ -42,12 +42,11 @@ public class WorldIO {
     }
 
     public static synchronized WorldIO getInstance() {
-        if (INSTANCE == null) throw new IllegalStateException("Pass parameter to initialize WorldIO before get");
         return INSTANCE;
     }
 
-    public static synchronized WorldIO getInstance(String ip, int port, int world) throws IOException {
-        if (INSTANCE == null) INSTANCE = new WorldIO(ip, port, world);
+    public static synchronized WorldIO newInstance(String ip, int port, int world) throws IOException {
+        INSTANCE = new WorldIO(ip, port, world);
         return INSTANCE;
     }
 

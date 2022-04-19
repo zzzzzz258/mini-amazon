@@ -10,13 +10,24 @@ import java.util.List;
  * Class to listen on WorldIO output stream.
  * Receive, identify, and dispatch message to its solver
  */
-public class WorldOutputListener {
+public class WorldOutputListener implements Runnable{
+    private static WorldOutputListener INSTANCE;
+
     WorldIO worldIO;
     AckManager ackManager;
 
     public WorldOutputListener(WorldIO worldIO, AckManager ackManager) {
         this.worldIO = worldIO;
         this.ackManager = ackManager;
+    }
+
+    public static WorldOutputListener getInstance() {
+        return INSTANCE;
+    }
+
+    public static synchronized WorldOutputListener newInstance(WorldIO worldIO, AckManager ackManager) {
+        INSTANCE = new WorldOutputListener(worldIO, ackManager);
+        return INSTANCE;
     }
 
     public void receive() throws IOException {
@@ -39,6 +50,17 @@ public class WorldOutputListener {
     private void dispathAcks(List<Long> acks) {
         for (Long ack: acks) {
             ackManager.doAck(ack);
+        }
+    }
+
+    @Override
+    public void run() {
+        while (true) {
+            try {
+                receive();
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
         }
     }
 }

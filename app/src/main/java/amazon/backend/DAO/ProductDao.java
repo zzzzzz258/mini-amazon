@@ -1,5 +1,6 @@
 package amazon.backend.DAO;
 
+import amazon.backend.SingletonSessionFactory;
 import amazon.backend.model.Product;
 import amazon.backend.model.ProductPK;
 import org.hibernate.Session;
@@ -9,6 +10,10 @@ import org.hibernate.Transaction;
 public class ProductDao {
 
     private SessionFactory factory;
+
+    public ProductDao() {
+        factory = SingletonSessionFactory.getSessionFactory();
+    }
 
     public ProductDao(SessionFactory factory) {
         this.factory = factory;

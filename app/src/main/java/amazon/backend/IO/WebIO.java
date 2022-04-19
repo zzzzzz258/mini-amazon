@@ -31,16 +31,11 @@ public class WebIO {
     }
 
     public static synchronized WebIO getInstance() throws IllegalStateException {
-        if (INSTANCE == null) {
-            throw new IllegalStateException("Provide a port number to initialize WebIO first");
-        }
         return INSTANCE;
     }
 
-    public static synchronized WebIO getInstance(int port) throws IOException {
-        if (INSTANCE == null) {
-            INSTANCE = new WebIO(port);
-        }
+    public static synchronized WebIO newInstance(int port) throws IOException {
+        INSTANCE = new WebIO(port);
         return INSTANCE;
     }
 

@@ -1,5 +1,6 @@
 package amazon.backend.DAO;
 
+import amazon.backend.SingletonSessionFactory;
 import amazon.backend.model.WorldMessage;
 import org.hibernate.HibernateException;
 import org.hibernate.Session;
@@ -9,6 +10,10 @@ import org.hibernate.Transaction;
 public class WorldMessageDao {
 
     private SessionFactory factory;
+
+    public WorldMessageDao() {
+        factory = SingletonSessionFactory.getSessionFactory();
+    }
 
     public WorldMessageDao(SessionFactory factory) {
         this.factory = factory;

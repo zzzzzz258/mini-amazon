@@ -1,5 +1,6 @@
 package amazon.backend.DAO;
 
+import amazon.backend.SingletonSessionFactory;
 import amazon.backend.model.Package;
 import org.hibernate.Session;
 import org.hibernate.SessionFactory;
@@ -8,6 +9,10 @@ import org.postgresql.shaded.com.ongres.scram.common.bouncycastle.pbkdf2.Pack;
 
 public class PackageDao {
     private SessionFactory factory;
+
+    public PackageDao() {
+        factory = SingletonSessionFactory.getSessionFactory();
+    }
 
     public PackageDao(SessionFactory factory) {
         this.factory = factory;

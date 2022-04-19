@@ -23,7 +23,7 @@ class AppTest {
     public UpsWorldIO upsWorldIO;
     public WorldOutputListener worldOutputListener;
     public SessionFactory sessionFactory = SingletonSessionFactory.getSessionFactory();
-    public AckManager ackManager = AckManager.getInstance(sessionFactory);
+    public AckManager ackManager = AckManager.newInstance(sessionFactory);
 
     public void test_connect_world() throws IOException {
         String ip = "vcm-25372.vm.duke.edu";
@@ -49,9 +49,9 @@ class AppTest {
         System.out.println(uConnected);
 
         // connect to the world using given id with my amazon
-        amazonIO = WorldIO.getInstance(ip, amazonPort, worldId);
+        amazonIO = WorldIO.newInstance(ip, amazonPort, worldId);
 
-        worldOutputListener = new WorldOutputListener(amazonIO, ackManager);
+        worldOutputListener = WorldOutputListener.newInstance(WorldIO.getInstance(), AckManager.getInstance());
     }
 
     @Test

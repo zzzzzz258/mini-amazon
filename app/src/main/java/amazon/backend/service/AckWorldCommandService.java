@@ -6,11 +6,9 @@ import org.hibernate.SessionFactory;
 
 public class AckWorldCommandService implements Runnable{
 
-    private SessionFactory sessionFactory;
     private long seqNum;
 
-    public AckWorldCommandService(SessionFactory sessionFactory, long seqNum) {
-        this.sessionFactory = sessionFactory;
+    public AckWorldCommandService(long seqNum) {
         this.seqNum = seqNum;
     }
 
@@ -19,7 +17,7 @@ public class AckWorldCommandService implements Runnable{
      */
     @Override
     public void run() {
-        WorldMessageDao worldMessageDao = new WorldMessageDao(sessionFactory);
+        WorldMessageDao worldMessageDao = new WorldMessageDao();
         worldMessageDao.ackOne(seqNum);
     }
 }

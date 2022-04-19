@@ -3,14 +3,48 @@
  */
 package amazon.backend;
 
+import amazon.backend.IO.WebIO;
+import amazon.backend.IO.WebOutputListener;
+import amazon.backend.IO.WorldIO;
+import amazon.backend.IO.WorldOutputListener;
+import amazon.backend.manager.AckManager;
+import amazon.backend.manager.LogisticsManager;
 import org.hibernate.SessionFactory;
 import org.hibernate.cfg.Configuration;
 
+import java.io.IOException;
+
 public class App {
 
-    public static SessionFactory sessionFactory;
+    private final int myWebPort = 2222;
+    private final int myUpsPort = 6666;
+    String ip = "vcm-25372.vm.duke.edu";
+    int upsPort = 23456;
+    int amazonPort = 12345;
+    int worldId = 1;
 
-    public static void main(String[] args) {
-        sessionFactory = new Configuration().configure().buildSessionFactory();
+    private SessionFactory sessionFactory;
+
+    public App() throws IOException {
+        sessionFactory = SingletonSessionFactory.getSessionFactory();
+        WebIO.newInstance(myWebPort);
+        WorldIO.newInstance(ip, amazonPort, worldId);
+        AckManager.newInstance(sessionFactory);
+        LogisticsManager.newInstance(sessionFactory);
+        WebOutputListener.newInstance(WebIO.getInstance(), LogisticsManager.getInstance());
+        WorldOutputListener.newInstance(WorldIO.getInstance(), AckManager.getInstance());
+    }
+
+    public void start() {
+        Thread webListener = new Thread(WebOutputListener.getInstance());
+        Thread worldListener = new Thread(WorldOutputListener.getInstance());
+
+        webListener.start();
+        worldListener.start();
+    }
+
+    public static void main(String[] args) throws IOException {
+        App app = new App();
+        app.start();
     }
 }
