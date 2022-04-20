@@ -28,24 +28,26 @@ public class WebOutputListener implements Runnable {
     }
 
     public void receive() throws IOException {
-        FrontBack.FBMessage.Builder builder = FrontBack.FBMessage.newBuilder();
-        webIO.receiveFromWeb(builder);
+      FrontBack.FBMessage.Builder builder = FrontBack.FBMessage.newBuilder();
+      if (webIO.receiveFromWeb(builder) == true) {
         FrontBack.FBMessage fbMessage = builder.build();
         System.out.println("From Web:\n" + fbMessage);
         dispatchOrder(fbMessage);
+      }
     }
 
     private void dispatchOrder(FrontBack.FBMessage order) {
-        logisticsManager.confirmOrder(order);
+      System.out.println("Dispatch to manager: "+order.toString());
+      logisticsManager.confirmOrder(order);
     }
 
     @Override
     public void run() {
-        while (true) {
+      while (true) {
             try {
                 receive();
             } catch (IOException e) {
-                e.printStackTrace();
+              e.printStackTrace();
             }
         }
     }

@@ -55,11 +55,12 @@ public class WorldOutputListener implements Runnable{
 
     @Override
     public void run() {
+      System.out.println("World listener running");
         while (true) {
             try {
                 receive();
             } catch (IOException e) {
-                e.printStackTrace();
+                              e.printStackTrace();
             }
         }
     }

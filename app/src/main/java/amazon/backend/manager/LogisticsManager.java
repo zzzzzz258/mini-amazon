@@ -36,6 +36,7 @@ public class LogisticsManager {
     }
 
     public synchronized void confirmOrder(FrontBack.FBMessage order) {
+      System.out.println("Manager calls confirm Order");
         orderConfirmedPool.execute(new DealWebOrderService(order));
     }
 }

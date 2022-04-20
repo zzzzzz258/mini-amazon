@@ -29,6 +29,8 @@ public class DealWebOrderService implements Runnable {
      */
     @Override
     public void run() {
+      System.out.println("WebOrder: " + order.toString());
+      
         PackageDao packageDao = new PackageDao();
         ProductDao productDao = new ProductDao();
 

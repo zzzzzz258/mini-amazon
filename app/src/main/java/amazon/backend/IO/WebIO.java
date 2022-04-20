@@ -27,7 +27,7 @@ public class WebIO {
         socket = serverSocket.accept();
         outputStream = socket.getOutputStream();
         inputStream = socket.getInputStream();
-        serverSocket.close();
+        //serverSocket.close();
     }
 
     public static synchronized WebIO getInstance() throws IllegalStateException {
@@ -80,11 +80,17 @@ public class WebIO {
      * @param <T>
      * @throws IOException
      */
-    public synchronized <T extends GeneratedMessageV3.Builder<?>> void receiveFromWeb(T responseBuilder) throws IOException {
+    public <T extends GeneratedMessageV3.Builder<?>> boolean receiveFromWeb(T responseBuilder) throws IOException {
         CodedInputStream cis = CodedInputStream.newInstance(inputStream);
+        if (cis.getTotalBytesRead() >0 ) {
         int size = cis.readRawVarint32();
+        System.out.println(size);
         int oldLimit = cis.pushLimit(size);
         responseBuilder.mergeFrom(cis);
         cis.popLimit(oldLimit);
+        System.out.println("Receive from web finish");
+        return true;
+        }
+        return false;
     }
 }
