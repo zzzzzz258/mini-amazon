@@ -3,14 +3,10 @@
  */
 package amazon.backend;
 
-import amazon.backend.IO.WebIO;
-import amazon.backend.IO.WebOutputListener;
-import amazon.backend.IO.WorldIO;
-import amazon.backend.IO.WorldOutputListener;
+import amazon.backend.IO.*;
 import amazon.backend.manager.AckManager;
 import amazon.backend.manager.LogisticsManager;
 import org.hibernate.SessionFactory;
-import org.hibernate.cfg.Configuration;
 
 import java.io.IOException;
 
@@ -18,34 +14,41 @@ public class App {
 
     private final int myWebPort = 2222;
     private final int myUpsPort = 6666;
-    String ip = "vcm-25372.vm.duke.edu";
-    int upsPort = 23456;
-    int amazonPort = 12345;
-    int worldId = 1;
+    public static final String IP = "vcm-25372.vm.duke.edu";
+    public static final int UPSPORT = 23456;
+    public static final int AMAZONPORT = 12345;
+    public static final int WORLDID = 2;
 
     private SessionFactory sessionFactory;
 
     public App() throws IOException {
         sessionFactory = SingletonSessionFactory.getSessionFactory();
+        WorldIO.newInstance(IP, AMAZONPORT, WORLDID);
         WebIO.newInstance(myWebPort);
-        System.out.println("Web connected");
         AckManager.newInstance(sessionFactory);
         LogisticsManager.newInstance(sessionFactory);
-        WebOutputListener.newInstance(WebIO.getInstance(), LogisticsManager.getInstance());
-        WorldOutputListener.newInstance(WorldIO.newInstance(ip, amazonPort, worldId), AckManager.getInstance());
+        WebListener.newInstance(WebIO.getInstance(), LogisticsManager.getInstance());
+        WorldListener.newInstance(WorldIO.newInstance(IP, AMAZONPORT, WORLDID), AckManager.getInstance());
     }
 
     public void start() throws IOException {
-        Thread webListener = new Thread(WebOutputListener.getInstance());
-        Thread worldListener = new Thread(WorldOutputListener.getInstance());
+        Thread webListener = new Thread(WebListener.getInstance(), "Web Listener");
+        Thread worldListener = new Thread(WorldListener.getInstance(), "World Listener");
 
         webListener.start();
         worldListener.start();
+    }
 
-
+    public static void setUpUps() throws IOException {
+        UpsWorldIO upsWorldIO = new UpsWorldIO(IP, UPSPORT);
+        upsWorldIO.sendConnect(WORLDID);
+        upsWorldIO.recvConnected();
     }
 
     public static void main(String[] args) throws IOException {
+        // In testing, I need a ups io
+        setUpUps();
+
         App app = new App();
         app.start();
     }

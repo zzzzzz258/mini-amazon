@@ -3,14 +3,10 @@
  */
 package amazon.backend;
 
-import amazon.backend.DAO.WorldMessageDao;
 import amazon.backend.IO.WorldIO;
-import amazon.backend.IO.WorldOutputListener;
+import amazon.backend.IO.WorldListener;
 import amazon.backend.manager.AckManager;
-import amazon.backend.model.Product;
-import amazon.backend.model.WorldMessage;
-import amazon.backend.simpleups.UpsWorldIO;
-import amazon.backend.simpleups.WorldUps;
+import amazon.backend.IO.UpsWorldIO;
 import com.google.protobuf.CodedOutputStream;
 import org.hibernate.SessionFactory;
 import org.junit.jupiter.api.Test;
@@ -19,13 +15,11 @@ import protobuf.FrontBack;
 import java.io.IOException;
 import java.net.Socket;
 import java.net.UnknownHostException;
-import java.util.ArrayList;
-import java.util.List;
 
 class AppTest {
     public WorldIO amazonIO;
     public UpsWorldIO upsWorldIO;
-    public WorldOutputListener worldOutputListener;
+    public WorldListener worldListener;
     public SessionFactory sessionFactory = SingletonSessionFactory.getSessionFactory();
     public AckManager ackManager = AckManager.newInstance(sessionFactory);
 

@@ -13,14 +13,14 @@ import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.*;
 
-class WebOutputListenerTest {
+class WebListenerTest {
 
     @Mock
     LogisticsManager logisticsManager = mock(LogisticsManager.class);
 
     @Test
     void getInstance() {
-        assertNull(WebOutputListener.getInstance());
+        assertNull(WebListener.getInstance());
     }
 
     @Test
@@ -51,9 +51,9 @@ class WebOutputListenerTest {
         });
 
         WebIO mockWebIO = WebIO.newInstance(3579);
-        WebOutputListener webOutputListener = WebOutputListener.newInstance(mockWebIO, logisticsManager);
+        WebListener webListener = WebListener.newInstance(mockWebIO, logisticsManager);
 
-        webOutputListener.run();
+        webListener.run();
 
         
 

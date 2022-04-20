@@ -1,6 +1,8 @@
 package amazon.backend.manager;
 
 import amazon.backend.service.AckWorldCommandService;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.hibernate.SessionFactory;
 
 import java.util.Queue;
@@ -15,11 +17,13 @@ import java.util.concurrent.ThreadPoolExecutor;
 public class AckManager {
 
     private static AckManager INSTANCE;
+    Logger logger = LogManager.getLogger();
 
     ThreadPoolExecutor threadPoolExecutor;
 
     private AckManager() {
         this.threadPoolExecutor = (ThreadPoolExecutor) Executors.newFixedThreadPool(50);
+        logger.info("AckManager Instance contructed");
     }
 
     public static synchronized AckManager getInstance() {

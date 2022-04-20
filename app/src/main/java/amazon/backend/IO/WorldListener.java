@@ -1,40 +1,45 @@
 package amazon.backend.IO;
 
 import amazon.backend.manager.AckManager;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import protobuf.WorldAmazon;
 
 import java.io.IOException;
+import java.net.SocketTimeoutException;
 import java.util.List;
 
 /**
  * Class to listen on WorldIO output stream.
  * Receive, identify, and dispatch message to its solver
  */
-public class WorldOutputListener implements Runnable{
-    private static WorldOutputListener INSTANCE;
+public class WorldListener implements Runnable{
+    private static WorldListener INSTANCE;
+    Logger logger = LogManager.getLogger();
 
     WorldIO worldIO;
     AckManager ackManager;
 
-    public WorldOutputListener(WorldIO worldIO, AckManager ackManager) {
+    public WorldListener(WorldIO worldIO, AckManager ackManager) {
         this.worldIO = worldIO;
         this.ackManager = ackManager;
+        logger.info("New WorldListener instance constructed");
     }
 
-    public static WorldOutputListener getInstance() {
+    public static WorldListener getInstance() {
         return INSTANCE;
     }
 
-    public static synchronized WorldOutputListener newInstance(WorldIO worldIO, AckManager ackManager) {
-        INSTANCE = new WorldOutputListener(worldIO, ackManager);
+    public static synchronized WorldListener newInstance(WorldIO worldIO, AckManager ackManager) {
+        INSTANCE = new WorldListener(worldIO, ackManager);
         return INSTANCE;
     }
 
-    public void receive() throws IOException {
+    public void receive() throws IOException, SocketTimeoutException {
         WorldAmazon.AResponses.Builder responseBuilder = WorldAmazon.AResponses.newBuilder();
         worldIO.receiveFromWorld(responseBuilder);
         WorldAmazon.AResponses responses = responseBuilder.build();
-        System.out.println("Response: " + responses);
+        logger.info("Response: " + responses);
         dispatchPurchased(responses.getArrivedList());
         dispathAcks(responses.getAcksList());
         // TODO: dispatch others
@@ -43,27 +48,33 @@ public class WorldOutputListener implements Runnable{
     private void dispatchPurchased(List<WorldAmazon.APurchaseMore> aPurchaseMoreList) {
         for (WorldAmazon.APurchaseMore aPurchaseMore: aPurchaseMoreList) {
             // TODO: do real dispatch
-            System.out.println(aPurchaseMore);
+            //System.out.println(aPurchaseMore);
         }
     }
 
     private void dispathAcks(List<Long> acks) {
         for (Long ack: acks) {
-            System.out.println("ack: "+ack);
+            logger.info("Receive ack: "+ack);
             ackManager.doAck(ack);
         }
     }
 
     @Override
     public void run() {
-      System.out.println("World listener running");
+      logger.info("WorldListener starts running");
         while (true) {
             try {
-                Thread.sleep(10);
                 receive();
+            } catch (SocketTimeoutException e) {
+                // send buffer if read nothing
+                if (!worldIO.isBufferEmpty()) {
+                    try {
+                        worldIO.sendBufferToWorld();
+                    } catch (IOException ex) {
+                        ex.printStackTrace();
+                    }
+                }
             } catch (IOException e) {
-                e.printStackTrace();
-            } catch (InterruptedException e) {
                 e.printStackTrace();
             }
         }

@@ -1,14 +1,13 @@
 package amazon.backend.IO;
 
 import amazon.backend.model.Product;
-import amazon.backend.simpleups.UpsWorldIO;
 import org.junit.jupiter.api.Test;
 
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
-import amazon.backend.simpleups.WorldUps;
+import protobuf.WorldUps;
 
 class WorldIOTest {
 

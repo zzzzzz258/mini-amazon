@@ -2,6 +2,8 @@ package amazon.backend.DAO;
 
 import amazon.backend.SingletonSessionFactory;
 import amazon.backend.model.WorldMessage;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.hibernate.HibernateException;
 import org.hibernate.Session;
 import org.hibernate.SessionFactory;
@@ -10,6 +12,7 @@ import org.hibernate.Transaction;
 public class WorldMessageDao {
 
     private SessionFactory factory;
+    Logger logger = LogManager.getLogger(WorldMessageDao.class);
 
     public WorldMessageDao() {
         factory = SingletonSessionFactory.getSessionFactory();
@@ -80,15 +83,23 @@ public class WorldMessageDao {
      */
     public void ackOne(long seqNum) {
         Session session = factory.openSession();
-        Transaction transaction = session.beginTransaction();
+        Transaction transaction = null;
+        try {
+            transaction = session.beginTransaction();
 
-        WorldMessage worldMessage = session.get(WorldMessage.class, seqNum);
-        worldMessage.setAcked(true);
-        session.merge(worldMessage);
+            WorldMessage worldMessage = session.get(WorldMessage.class, seqNum);
+            worldMessage.setAcked(true);
+            session.merge(worldMessage);
 
-        transaction.commit();
-        session.close();
-
-        System.out.println("Ack: " + seqNum);
+            transaction.commit();
+            logger.info("Ack " + seqNum + " successful");
+        }
+        catch (NullPointerException e) {
+            logger.error("Ack " + seqNum + " fails, record doesn't exists");
+            transaction.rollback();
+        }
+        finally {
+            session.close();
+        }
     }
 }

@@ -1,5 +1,7 @@
 package amazon.backend.manager;
 
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import protobuf.FrontBack;
 import amazon.backend.service.DealWebOrderService;
 import org.hibernate.SessionFactory;
@@ -10,11 +12,13 @@ import java.util.concurrent.ThreadPoolExecutor;
 public class LogisticsManager {
 
     private static LogisticsManager INSTANCE;
+    Logger logger = LogManager.getLogger();
 
     ThreadPoolExecutor orderConfirmedPool;
 
     private LogisticsManager() {
         orderConfirmedPool = (ThreadPoolExecutor) Executors.newFixedThreadPool(50);
+        logger.info("Logistics manager instance constructed");
     }
 
     /**

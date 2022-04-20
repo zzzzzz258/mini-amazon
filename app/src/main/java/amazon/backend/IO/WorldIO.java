@@ -3,6 +3,8 @@ package amazon.backend.IO;
 import amazon.backend.DAO.WarehouseDao;
 import amazon.backend.model.Product;
 import amazon.backend.model.Warehouse;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import protobuf.WorldAmazon;
 import com.google.protobuf.CodedInputStream;
 import com.google.protobuf.CodedOutputStream;
@@ -10,18 +12,24 @@ import com.google.protobuf.GeneratedMessageV3;
 
 import java.io.*;
 import java.net.Socket;
+import java.net.SocketTimeoutException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
 public class WorldIO {
     private static WorldIO INSTANCE;
+    Logger logger = LogManager.getLogger();
+
     public List<Integer> warehouseIds = new ArrayList<>();
 
     private Socket socket;
     private OutputStream outputStream;
     private InputStream inputStream;
     private long seqNum;
+    private boolean isBufferEmpty;
+
+    private WorldAmazon.ACommands.Builder bufferBuilder;
 
     /**
      * The warehosue positions to initialize
@@ -36,12 +44,28 @@ public class WorldIO {
         return outputStream;
     }
 
+    public boolean isBufferEmpty() {
+        return isBufferEmpty;
+    }
+
+    public void bufferNotEmpty() {
+        isBufferEmpty = false;
+    }
+
+    public void bufferEmpty() {
+        isBufferEmpty = true;
+    }
+
     private WorldIO(String ip, int port, int worldId) throws IOException {
         socket = new Socket(ip, port);
+        socket.setSoTimeout(50);
         outputStream = socket.getOutputStream();
         inputStream = socket.getInputStream();
         connectToWorld(worldId);
         seqNum = 1;
+        bufferBuilder = WorldAmazon.ACommands.newBuilder();
+        isBufferEmpty = true;
+        logger.info("Construct new WorldIO: "+ip+":"+port+" in world "+worldId);
     }
 
     public static synchronized WorldIO getInstance() {
@@ -81,12 +105,12 @@ public class WorldIO {
         // send connect request
         WorldAmazon.AConnect connect = createAConnect(worldId, wareHouseList);
         sendToWorld(connect.toByteArray());
+        logger.info("Send connect to world:\n"+connect);
         // wait for response
         WorldAmazon.AConnected.Builder connectedBuilder = WorldAmazon.AConnected.newBuilder();
         receiveFromWorld(connectedBuilder);
-        System.out.println(connectedBuilder);
         WorldAmazon.AConnected connected = connectedBuilder.build();
-        System.out.println(connected.getWorldid()+": "+connected.getResult());
+        logger.info("Receive connected from world:\n" + connected);
     }
 
     /**
@@ -132,9 +156,10 @@ public class WorldIO {
         products.stream().forEach(p -> builder.addThings(createAProduct(p)));
         long tSeqNum = getSeqNum();
         builder.setSeqnum(tSeqNum);
-        WorldAmazon.ACommands aCommands = createACommands(List.of(builder.build()), null);
-        System.out.println("Command: " + aCommands);
-        sendToWorld(aCommands.toByteArray());
+        bufferBuilder.addBuy(builder.build());
+
+        logger.info("Add new APurchaseMore to BufferBuilder:\n" + builder.build());
+        bufferNotEmpty();
         return tSeqNum;
     }
 
@@ -206,6 +231,19 @@ public class WorldIO {
     }
 
     /**
+     * Send command buffer to world
+     * @return
+     * @throws IOException
+     */
+    public void sendBufferToWorld() throws IOException {
+        WorldAmazon.ACommands aCommands = bufferBuilder.build();
+        logger.info("Send ACommands to world:\n" + aCommands);
+        sendToWorld(aCommands.toByteArray());
+        bufferBuilder.clear();
+        bufferEmpty();
+    }
+
+    /**
      * Method to send message to world
      * @param data sending data in byte array
      * @throws IOException
@@ -225,14 +263,10 @@ public class WorldIO {
      * @param <T>
      * @throws IOException
      */
-    public <T extends GeneratedMessageV3.Builder<?>> void receiveFromWorld(T responseBuilder) throws IOException {
+    public <T extends GeneratedMessageV3.Builder<?>> void receiveFromWorld(T responseBuilder) throws IOException, SocketTimeoutException {
         synchronized (this) {
             BufferedInputStream bufferedInputStream = new BufferedInputStream(inputStream);
-
-
-
             CodedInputStream cis = CodedInputStream.newInstance(inputStream);
-            System.out.println(cis.isAtEnd() ? "end" : "notend");
             int size = cis.readRawVarint32();
             int oldLimit = cis.pushLimit(size);
             responseBuilder.mergeFrom(cis);
