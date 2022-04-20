@@ -4,7 +4,6 @@ import amazon.backend.manager.LogisticsManager;
 import amazon.backend.protobuf.FrontBack;
 
 import java.io.IOException;
-import java.util.List;
 
 public class WebOutputListener implements Runnable {
 
