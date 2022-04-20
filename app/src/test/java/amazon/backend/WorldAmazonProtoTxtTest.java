@@ -1,6 +1,6 @@
 package amazon.backend;
 
-import amazon.backend.protobuf.WorldAmazon;
+import protobuf.WorldAmazon;
 import org.junit.jupiter.api.Test;
 
 import java.io.FileInputStream;

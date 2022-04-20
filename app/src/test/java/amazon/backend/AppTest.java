@@ -11,10 +11,14 @@ import amazon.backend.model.Product;
 import amazon.backend.model.WorldMessage;
 import amazon.backend.simpleups.UpsWorldIO;
 import amazon.backend.simpleups.WorldUps;
+import com.google.protobuf.CodedOutputStream;
 import org.hibernate.SessionFactory;
 import org.junit.jupiter.api.Test;
+import protobuf.FrontBack;
 
 import java.io.IOException;
+import java.net.Socket;
+import java.net.UnknownHostException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -54,7 +58,7 @@ class AppTest {
         worldOutputListener = WorldOutputListener.newInstance(WorldIO.getInstance(), AckManager.getInstance());
     }
 
-    @Test
+
     public void test_purchase() throws IOException {
         test_connect_world();
         // send purchase to world
@@ -67,5 +71,37 @@ class AppTest {
         while (true) {
             worldOutputListener.receive();
         }
+    }
+
+    @Test
+    public void test() throws IOException {
+        Thread webThread = new Thread(new Runnable() {
+            @Override
+            public void run() {
+                try {
+                    Thread.sleep(1000);
+                    Socket socket = new Socket("0.0.0.0", 2222);
+                    FrontBack.Product product = FrontBack.Product.newBuilder()
+                            .setIid(1).setCount(2).setDescription("3").build();
+                    FrontBack.FBMessage order = FrontBack.FBMessage.newBuilder()
+                            .setPid(1).setProducts(product).setX(3).setY(4).build();
+                    byte[] data = order.toByteArray();
+                    CodedOutputStream codedOutputStream = CodedOutputStream.newInstance(socket.getOutputStream());
+                    codedOutputStream.writeUInt32NoTag(data.length);
+                    codedOutputStream.writeRawBytes(data);
+                    codedOutputStream.flush();
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
+                } catch (UnknownHostException e) {
+                    e.printStackTrace();
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+            }
+        });
+
+        App app = new App();
+        app.start();
+
     }
 }

@@ -2,7 +2,7 @@ package amazon.backend.IO;
 
 import amazon.backend.model.Product;
 import amazon.backend.model.WareHouse;
-import amazon.backend.protobuf.WorldAmazon;
+import protobuf.WorldAmazon;
 import com.google.protobuf.CodedInputStream;
 import com.google.protobuf.CodedOutputStream;
 import com.google.protobuf.GeneratedMessageV3;
@@ -47,6 +47,16 @@ public class WorldIO {
 
     public static synchronized WorldIO newInstance(String ip, int port, int world) throws IOException {
         INSTANCE = new WorldIO(ip, port, world);
+        return INSTANCE;
+    }
+
+    /**
+     * Inject world into singleton, only used in test.
+     * @param worldIO
+     * @return
+     */
+    public static synchronized WorldIO newInstance(WorldIO worldIO) {
+        INSTANCE = worldIO;
         return INSTANCE;
     }
 

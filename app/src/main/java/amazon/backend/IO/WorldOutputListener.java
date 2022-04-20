@@ -1,7 +1,7 @@
 package amazon.backend.IO;
 
 import amazon.backend.manager.AckManager;
-import amazon.backend.protobuf.WorldAmazon;
+import protobuf.WorldAmazon;
 
 import java.io.IOException;
 import java.util.List;

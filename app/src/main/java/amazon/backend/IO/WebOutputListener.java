@@ -1,7 +1,7 @@
 package amazon.backend.IO;
 
 import amazon.backend.manager.LogisticsManager;
-import amazon.backend.protobuf.FrontBack;
+import protobuf.FrontBack;
 
 import java.io.IOException;
 
@@ -42,12 +42,12 @@ public class WebOutputListener implements Runnable {
 
     @Override
     public void run() {
-      while (true) {
-            try {
-                receive();
-            } catch (IOException e) {
-              e.printStackTrace();
+          while (true) {
+                try {
+                    receive();
+                } catch (IOException e) {
+                  e.printStackTrace();
+                }
             }
-        }
     }
 }

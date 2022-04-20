@@ -1,6 +1,6 @@
 package amazon.backend.manager;
 
-import amazon.backend.protobuf.FrontBack;
+import protobuf.FrontBack;
 import amazon.backend.service.DealWebOrderService;
 import org.hibernate.SessionFactory;
 

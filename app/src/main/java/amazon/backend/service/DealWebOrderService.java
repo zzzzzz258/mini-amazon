@@ -6,8 +6,7 @@ import amazon.backend.IO.WebIO;
 import amazon.backend.IO.WorldIO;
 import amazon.backend.model.Package;
 import amazon.backend.model.Product;
-import amazon.backend.protobuf.FrontBack;
-import org.hibernate.SessionFactory;
+import protobuf.FrontBack;
 
 import java.io.IOException;
 import java.util.List;

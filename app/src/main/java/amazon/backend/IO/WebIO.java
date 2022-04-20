@@ -1,6 +1,6 @@
 package amazon.backend.IO;
 
-import amazon.backend.protobuf.FrontBack;
+import protobuf.FrontBack;
 import com.google.protobuf.CodedInputStream;
 import com.google.protobuf.CodedOutputStream;
 import com.google.protobuf.GeneratedMessageV3;
@@ -25,9 +25,9 @@ public class WebIO {
     private WebIO(int port) throws IOException {
         ServerSocket serverSocket = new ServerSocket(port);
         socket = serverSocket.accept();
+        System.out.println("Web connected");
         outputStream = socket.getOutputStream();
         inputStream = socket.getInputStream();
-        //        serverSocket.close();
     }
 
     public static synchronized WebIO getInstance() throws IllegalStateException {
@@ -36,6 +36,16 @@ public class WebIO {
 
     public static synchronized WebIO newInstance(int port) throws IOException {
         INSTANCE = new WebIO(port);
+        return INSTANCE;
+    }
+
+    /**
+     * This method should be used for testing only
+     * @param webIO
+     * @return
+     */
+    public static WebIO newInstance(WebIO webIO) {
+        INSTANCE = webIO;
         return INSTANCE;
     }
 

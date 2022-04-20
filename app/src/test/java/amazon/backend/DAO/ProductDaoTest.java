@@ -20,8 +20,8 @@ class ProductDaoTest {
         WorldMessageDao worldMessageDao = new WorldMessageDao(factory);
 
 
-        int productId = 998;
-        int seqNum = 727;
+        long productId = 1998071616;
+        long seqNum = 2022041919;
 
         if (worldMessageDao.getOne(seqNum) == null) {
             worldMessageDao.addOne(new WorldMessage(seqNum));
@@ -31,6 +31,7 @@ class ProductDaoTest {
         if (productDao.getOne(productId, packageId)!=null) {
             productDao.deleteOne(productId, packageId);
         }
+        assertNull(productDao.getOne(productId, packageId));
 
         // Test addOne
         productDao.addOne(new Product(productId, "holy shit", 3, packageId));

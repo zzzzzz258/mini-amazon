@@ -1,5 +1,6 @@
 package amazon.backend.DAO;
 
+import amazon.backend.SingletonSessionFactory;
 import amazon.backend.model.WorldMessage;
 import org.hibernate.SessionFactory;
 import org.hibernate.cfg.Configuration;
@@ -15,7 +16,7 @@ class WorldMessageDaoTest {
 
     @BeforeAll
     public static void init() {
-        sessionFactory = new Configuration().configure().buildSessionFactory();
+        sessionFactory = SingletonSessionFactory.getSessionFactory();
     }
 
     @BeforeEach
@@ -24,8 +25,18 @@ class WorldMessageDaoTest {
     }
 
     @Test
-    public void test_addOne() {
-        worldMessageDao.addOne(new WorldMessage(99));
-        worldMessageDao.ackOne(99);
+    public void test_addOne_ackOne() {
+        long seqNum = 10568832;
+        if (worldMessageDao.getOne(seqNum) != null) {
+            worldMessageDao.deleteOne(seqNum);
+            assertNull(worldMessageDao.getOne(seqNum));
+        }
+        worldMessageDao.addOne(new WorldMessage(seqNum));
+        WorldMessage message = worldMessageDao.getOne(seqNum);
+        assertNotNull(message);
+        assertFalse(message.isAcked());
+        worldMessageDao.ackOne(seqNum);
+        message = worldMessageDao.getOne(seqNum);
+        assertTrue(message.isAcked());
     }
 }
