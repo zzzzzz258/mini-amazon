@@ -42,12 +42,12 @@ public class WebOutputListener implements Runnable {
 
     @Override
     public void run() {
-          while (true) {
-                try {
-                    receive();
-                } catch (IOException e) {
-                  e.printStackTrace();
-                }
-            }
+      while (true) {
+        try {
+          receive();
+        } catch (IOException e) {
+          e.printStackTrace();
+        }
+      }
     }
 }

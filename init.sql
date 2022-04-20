@@ -1,3 +1,9 @@
+create table warehouse
+(
+    id  int primary key generated always as IDENTITY ,
+    x   int,
+    y   int
+);
 create table world_message
 (
     sequence_num bigint primary key,

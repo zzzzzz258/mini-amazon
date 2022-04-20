@@ -1,14 +1,28 @@
 package amazon.backend.model;
 
-public class WareHouse {
+import jakarta.persistence.*;
+
+@Entity
+public class Warehouse {
+  @Id
+  @GeneratedValue(strategy = GenerationType.IDENTITY)
   private int id;
   private int x;
   private int y;
 
-  public WareHouse(int id, int x, int y) {
+  public Warehouse(int x, int y) {
+    this.x = x;
+    this.y = y;
+  }
+
+  public Warehouse(int id, int x, int y) {
     this.id = id;
     this.x = x;
     this.y = y;
+  }
+
+  public Warehouse() {
+
   }
 
   public int getId() {

@@ -27,13 +27,12 @@ public class App {
 
     public App() throws IOException {
         sessionFactory = SingletonSessionFactory.getSessionFactory();
-        WorldIO.newInstance(ip, amazonPort, worldId);
         WebIO.newInstance(myWebPort);
         System.out.println("Web connected");
         AckManager.newInstance(sessionFactory);
         LogisticsManager.newInstance(sessionFactory);
         WebOutputListener.newInstance(WebIO.getInstance(), LogisticsManager.getInstance());
-        WorldOutputListener.newInstance(WorldIO.getInstance(), AckManager.getInstance());
+        WorldOutputListener.newInstance(WorldIO.newInstance(ip, amazonPort, worldId), AckManager.getInstance());
     }
 
     public void start() throws IOException {
@@ -43,7 +42,7 @@ public class App {
         webListener.start();
         worldListener.start();
 
-        //        WebIO.getInstance().sendStatus(3, "status");
+
     }
 
     public static void main(String[] args) throws IOException {

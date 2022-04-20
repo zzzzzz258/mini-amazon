@@ -1,21 +1,22 @@
 package amazon.backend.IO;
 
 import amazon.backend.manager.LogisticsManager;
+import com.google.protobuf.CodedOutputStream;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mock;
+import protobuf.FrontBack;
 
 import java.io.IOException;
+import java.net.Socket;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.*;
 
 class WebOutputListenerTest {
 
     @Mock
-    WebIO mockWebIO;
-    @Mock
-    LogisticsManager logisticsManager;
+    LogisticsManager logisticsManager = mock(LogisticsManager.class);
 
     @Test
     void getInstance() {
@@ -24,12 +25,37 @@ class WebOutputListenerTest {
 
     @Test
     void run() throws IOException {
-        WebOutputListener webOutputListener = WebOutputListener.newInstance(mockWebIO, logisticsManager);
-        assertNotNull(webOutputListener);
+        Thread webT = new Thread(new Runnable() {
+            @Override
+            public void run() {
+                try {
+                    Socket socket = new Socket("0.0.0.0", 3579);
 
-        webOutputListener.receive();
-        verify(mockWebIO).receiveFromWeb(any());
-        verify(logisticsManager).confirmOrder(any());
+                    Thread.sleep(50);
+
+                    FrontBack.Product product = FrontBack.Product.newBuilder()
+                            .setIid(1).setCount(2).setDescription("3").build();
+                    FrontBack.FBMessage order = FrontBack.FBMessage.newBuilder()
+                            .setPid(1).setProducts(product).setX(3).setY(4).build();
+                    byte[] data = order.toByteArray();
+                    CodedOutputStream codedOutputStream = CodedOutputStream.newInstance(socket.getOutputStream());
+                    codedOutputStream.writeUInt32NoTag(data.length);
+                    codedOutputStream.writeRawBytes(data);
+                    codedOutputStream.flush();
+                } catch (IOException e) {
+                    e.printStackTrace();
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
+                }
+            }
+        });
+
+        WebIO mockWebIO = WebIO.newInstance(3579);
+        WebOutputListener webOutputListener = WebOutputListener.newInstance(mockWebIO, logisticsManager);
+
+        webOutputListener.run();
+
+        
 
     }
 }

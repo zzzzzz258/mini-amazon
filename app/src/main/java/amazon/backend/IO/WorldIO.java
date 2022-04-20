@@ -1,7 +1,8 @@
 package amazon.backend.IO;
 
+import amazon.backend.DAO.WarehouseDao;
 import amazon.backend.model.Product;
-import amazon.backend.model.WareHouse;
+import amazon.backend.model.Warehouse;
 import protobuf.WorldAmazon;
 import com.google.protobuf.CodedInputStream;
 import com.google.protobuf.CodedOutputStream;
@@ -9,11 +10,13 @@ import com.google.protobuf.GeneratedMessageV3;
 
 import java.io.*;
 import java.net.Socket;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
 public class WorldIO {
     private static WorldIO INSTANCE;
+    public List<Integer> warehouseIds = new ArrayList<>();
 
     private Socket socket;
     private OutputStream outputStream;
@@ -50,6 +53,7 @@ public class WorldIO {
         return INSTANCE;
     }
 
+
     /**
      * Inject world into singleton, only used in test.
      * @param worldIO
@@ -67,13 +71,20 @@ public class WorldIO {
      */
     private void connectToWorld(int worldId) throws IOException {
         // add init warehouses
-        List<WareHouse> wareHouseList =  warehousePos.stream().map(pair -> new WareHouse(warehousePos.indexOf(pair), pair[0], pair[1])).collect(Collectors.toList());
+        List<Warehouse> wareHouseList = new ArrayList<>();
+        warehousePos.stream().forEach(pos -> {
+            WarehouseDao warehouseDao = new WarehouseDao();
+            int id = warehouseDao.addOne(new Warehouse(pos[0],pos[1]));
+            warehouseIds.add(id);
+            wareHouseList.add(new Warehouse(id, pos[0],pos[1]));
+        });
         // send connect request
         WorldAmazon.AConnect connect = createAConnect(worldId, wareHouseList);
         sendToWorld(connect.toByteArray());
         // wait for response
         WorldAmazon.AConnected.Builder connectedBuilder = WorldAmazon.AConnected.newBuilder();
         receiveFromWorld(connectedBuilder);
+        System.out.println(connectedBuilder);
         WorldAmazon.AConnected connected = connectedBuilder.build();
         System.out.println(connected.getWorldid()+": "+connected.getResult());
     }
@@ -84,7 +95,7 @@ public class WorldIO {
      * @param wareHouseList
      * @return
      */
-    private WorldAmazon.AConnect createAConnect(long worldId, List<WareHouse> wareHouseList) {
+    private WorldAmazon.AConnect createAConnect(long worldId, List<Warehouse> wareHouseList) {
         WorldAmazon.AConnect.Builder builder = WorldAmazon.AConnect.newBuilder();
         builder.setWorldid(worldId).setIsAmazon(true);
         if (wareHouseList != null) {
@@ -122,7 +133,7 @@ public class WorldIO {
         long tSeqNum = getSeqNum();
         builder.setSeqnum(tSeqNum);
         WorldAmazon.ACommands aCommands = createACommands(List.of(builder.build()), null);
-        System.out.println(aCommands);
+        System.out.println("Command: " + aCommands);
         sendToWorld(aCommands.toByteArray());
         return tSeqNum;
     }
@@ -199,11 +210,13 @@ public class WorldIO {
      * @param data sending data in byte array
      * @throws IOException
      */
-    public synchronized void sendToWorld(byte[] data) throws IOException {
-        CodedOutputStream cos = CodedOutputStream.newInstance(outputStream);
-        cos.writeUInt32NoTag(data.length);
-        cos.writeRawBytes(data);
-        cos.flush();
+    public void sendToWorld(byte[] data) throws IOException {
+        synchronized (this) {
+            CodedOutputStream cos = CodedOutputStream.newInstance(outputStream);
+            cos.writeUInt32NoTag(data.length);
+            cos.writeRawBytes(data);
+            cos.flush();
+        }
     }
 
     /**
@@ -212,12 +225,19 @@ public class WorldIO {
      * @param <T>
      * @throws IOException
      */
-    public synchronized <T extends GeneratedMessageV3.Builder<?>> void receiveFromWorld(T responseBuilder) throws IOException {
-        CodedInputStream cis = CodedInputStream.newInstance(inputStream);
-        int size = cis.readRawVarint32();
-        int oldLimit = cis.pushLimit(size);
-        responseBuilder.mergeFrom(cis);
-        cis.popLimit(oldLimit);
+    public <T extends GeneratedMessageV3.Builder<?>> void receiveFromWorld(T responseBuilder) throws IOException {
+        synchronized (this) {
+            BufferedInputStream bufferedInputStream = new BufferedInputStream(inputStream);
+
+
+
+            CodedInputStream cis = CodedInputStream.newInstance(inputStream);
+            System.out.println(cis.isAtEnd() ? "end" : "notend");
+            int size = cis.readRawVarint32();
+            int oldLimit = cis.pushLimit(size);
+            responseBuilder.mergeFrom(cis);
+            cis.popLimit(oldLimit);
+        }
     }
 
     /**

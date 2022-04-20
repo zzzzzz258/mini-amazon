@@ -34,7 +34,7 @@ public class WorldOutputListener implements Runnable{
         WorldAmazon.AResponses.Builder responseBuilder = WorldAmazon.AResponses.newBuilder();
         worldIO.receiveFromWorld(responseBuilder);
         WorldAmazon.AResponses responses = responseBuilder.build();
-        System.out.println(responses);
+        System.out.println("Response: " + responses);
         dispatchPurchased(responses.getArrivedList());
         dispathAcks(responses.getAcksList());
         // TODO: dispatch others
@@ -43,12 +43,13 @@ public class WorldOutputListener implements Runnable{
     private void dispatchPurchased(List<WorldAmazon.APurchaseMore> aPurchaseMoreList) {
         for (WorldAmazon.APurchaseMore aPurchaseMore: aPurchaseMoreList) {
             // TODO: do real dispatch
-
+            System.out.println(aPurchaseMore);
         }
     }
 
     private void dispathAcks(List<Long> acks) {
         for (Long ack: acks) {
+            System.out.println("ack: "+ack);
             ackManager.doAck(ack);
         }
     }
@@ -58,9 +59,12 @@ public class WorldOutputListener implements Runnable{
       System.out.println("World listener running");
         while (true) {
             try {
+                Thread.sleep(10);
                 receive();
             } catch (IOException e) {
-                              e.printStackTrace();
+                e.printStackTrace();
+            } catch (InterruptedException e) {
+                e.printStackTrace();
             }
         }
     }

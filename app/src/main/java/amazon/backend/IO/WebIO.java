@@ -94,12 +94,12 @@ public class WebIO {
         if (inputStream.available()>0 ) {
           CodedInputStream cis = CodedInputStream.newInstance(inputStream);
           int size = cis.readRawVarint32();
-        System.out.println(size);
-        int oldLimit = cis.pushLimit(size);
-        responseBuilder.mergeFrom(cis);
-        cis.popLimit(oldLimit);
-        System.out.println("Receive from web finish");
-        return true;
+           System.out.println(size);
+           int oldLimit = cis.pushLimit(size);
+           responseBuilder.mergeFrom(cis);
+           cis.popLimit(oldLimit);
+           System.out.println("Receive from web finish");
+           return true;
         }
         return false;
     }

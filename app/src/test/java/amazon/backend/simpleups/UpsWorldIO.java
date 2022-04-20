@@ -1,5 +1,6 @@
 package amazon.backend.simpleups;
 
+import amazon.backend.IO.WorldIO;
 import com.google.protobuf.CodedInputStream;
 import com.google.protobuf.CodedOutputStream;
 import com.google.protobuf.GeneratedMessageV3;
@@ -27,6 +28,16 @@ public class UpsWorldIO {
         socket = new Socket(ip, port);
         outputStream = socket.getOutputStream();
         inputStream = socket.getInputStream();
+    }
+
+    public void sendConnect(int worldId) throws IOException {
+        sendToWorld(WorldUps.UConnect.newBuilder().setWorldid(worldId).setIsAmazon(false).build().toByteArray());
+    }
+
+    public void recvConnected() throws IOException {
+        WorldUps.UConnected.Builder builder = WorldUps.UConnected.newBuilder();
+        receiveFromWorld(builder);
+        System.out.println(builder.build());
     }
 
     public void sendToWorld(byte[] data) throws IOException {

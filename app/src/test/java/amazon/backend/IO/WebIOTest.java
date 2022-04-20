@@ -77,11 +77,12 @@ class WebIOTest {
         WebIO webIO = WebIO.newInstance(9987);
         FrontBack.FBMessage.Builder fbBuilder = FrontBack.FBMessage.newBuilder();
 
-
         while (true) {
-            System.out.println("wait to receive");
-            webIO.receiveFromWeb(fbBuilder);
-            System.out.println(fbBuilder.build());
+            if (webIO.receiveFromWeb(fbBuilder)) {
+                System.out.println(fbBuilder.build());
+                assertEquals("3", fbBuilder.build().getProducts().getDescription());
+                break;
+            }
         }
     }
 
