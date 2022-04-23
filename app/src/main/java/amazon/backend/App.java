@@ -15,8 +15,8 @@ public class App {
     private final int myWebPort = 2222;
     private final int myUpsPort = 6666;
     public static final String IP = "vcm-25372.vm.duke.edu";
-    public static final int UPSPORT = 23456;
-    public static final int AMAZONPORT = 12345;
+    public static final int UPSPORT = 12345;
+    public static final int AMAZONPORT = 23456;
     public static long WORLDID = 24;
 
     private SessionFactory sessionFactory;
