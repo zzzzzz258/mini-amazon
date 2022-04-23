@@ -3,6 +3,7 @@ package amazon.backend.DAO;
 import amazon.backend.SingletonSessionFactory;
 import amazon.backend.model.Package;
 import amazon.backend.model.Product;
+import amazon.backend.model.ProductPK;
 import amazon.backend.model.WorldMessage;
 import org.hibernate.SessionFactory;
 import org.junit.jupiter.api.Test;

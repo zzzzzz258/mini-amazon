@@ -17,37 +17,35 @@ public class App {
     public static final String IP = "vcm-25372.vm.duke.edu";
     public static final int UPSPORT = 23456;
     public static final int AMAZONPORT = 12345;
-    public static final int WORLDID = 2;
+    public static long WORLDID = 24;
 
     private SessionFactory sessionFactory;
 
     public App() throws IOException {
         sessionFactory = SingletonSessionFactory.getSessionFactory();
         WorldIO.newInstance(IP, AMAZONPORT, WORLDID);
-        WebIO.newInstance(myWebPort);
+        //WebIO.newInstance(myWebPort);
         AckManager.newInstance(sessionFactory);
         LogisticsManager.newInstance(sessionFactory);
-        WebListener.newInstance(WebIO.getInstance(), LogisticsManager.getInstance());
-        WorldListener.newInstance(WorldIO.newInstance(IP, AMAZONPORT, WORLDID), AckManager.getInstance());
+        //WebListener.newInstance(WebIO.getInstance(), LogisticsManager.getInstance());
+        WorldListener.newInstance(WorldIO.getInstance(), AckManager.getInstance());
     }
 
     public void start() throws IOException {
-        Thread webListener = new Thread(WebListener.getInstance(), "Web Listener");
+        //Thread webListener = new Thread(WebListener.getInstance(), "Web Listener");
         Thread worldListener = new Thread(WorldListener.getInstance(), "World Listener");
 
-        webListener.start();
+        //webListener.start();
         worldListener.start();
     }
 
-    public static void setUpUps() throws IOException {
-        UpsWorldIO upsWorldIO = new UpsWorldIO(IP, UPSPORT);
-        upsWorldIO.sendConnect(WORLDID);
-        upsWorldIO.recvConnected();
-    }
-
-    public static void main(String[] args) throws IOException {
+    public static void main(String[] args) throws IOException, InterruptedException {
         // In testing, I need a ups io
-        setUpUps();
+        UpsWorldIO upsWorldIO = new UpsWorldIO(IP, UPSPORT);
+        upsWorldIO.sendConnect();
+        WORLDID = upsWorldIO.recvConnected();
+        Thread thread = new Thread(upsWorldIO);
+        thread.start();
 
         App app = new App();
         app.start();

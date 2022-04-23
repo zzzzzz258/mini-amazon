@@ -11,9 +11,12 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.net.Socket;
+import java.util.Random;
 
-public class UpsWorldIO {
+public class UpsWorldIO implements Runnable {
     Logger logger = LogManager.getLogger();
+
+    Random random = new Random();
 
     public Socket socket;
     public OutputStream outputStream;
@@ -29,21 +32,32 @@ public class UpsWorldIO {
 
     public UpsWorldIO(String ip, int port) throws IOException {
         socket = new Socket(ip, port);
+        //socket.setSoTimeout(50);
         outputStream = socket.getOutputStream();
         inputStream = socket.getInputStream();
         logger.info("Mock Ups connected to World");
     }
 
-    public void sendConnect(int worldId) throws IOException {
-        WorldUps.UConnect uConnect = WorldUps.UConnect.newBuilder().setWorldid(worldId).setIsAmazon(false).build();
+    public void sendConnect() throws IOException {
+        WorldUps.UInitTruck uInitTruck = WorldUps.UInitTruck.newBuilder()
+                .setId(random.nextInt())
+                .setX(1)
+                .setY(2)
+                .build();
+        WorldUps.UConnect uConnect = WorldUps.UConnect.newBuilder()
+                .setIsAmazon(false)
+                .addTrucks(uInitTruck)
+                .build();
         sendToWorld(uConnect.toByteArray());
         logger.info("Mock ups send connect to world \n"+uConnect);
     }
 
-    public void recvConnected() throws IOException {
+    public long recvConnected() throws IOException {
         WorldUps.UConnected.Builder builder = WorldUps.UConnected.newBuilder();
         receiveFromWorld(builder);
-        logger.info("Mock ups receive connected from world:\n" + builder.build());
+        WorldUps.UConnected uConnected = builder.build();
+        logger.info("Mock ups receive connected from world:\n" + uConnected);
+        return uConnected.getWorldid();
     }
 
     public void sendToWorld(byte[] data) throws IOException {
@@ -61,4 +75,14 @@ public class UpsWorldIO {
         cis.popLimit(oldLimit);
     }
 
+    @Override
+    public void run() {
+        while (true) {
+            try {
+                recvConnected();
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        }
+    }
 }

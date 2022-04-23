@@ -34,7 +34,7 @@ public class WorldIO {
     /**
      * The warehosue positions to initialize
      */
-    private final List<int[]> warehousePos = List.of(new int[] {1,1}, new int[] {551,550}, new int[] {651, 650}, new int[] {1128, 1112});
+    private final List<int[]> warehousePos = List.of(new int[] {1,1});
 
     public InputStream getInputStream() throws IOException {
         return inputStream;
@@ -56,9 +56,8 @@ public class WorldIO {
         isBufferEmpty = true;
     }
 
-    private WorldIO(String ip, int port, int worldId) throws IOException {
+    private WorldIO(String ip, int port, long worldId) throws IOException {
         socket = new Socket(ip, port);
-        socket.setSoTimeout(50);
         outputStream = socket.getOutputStream();
         inputStream = socket.getInputStream();
         connectToWorld(worldId);
@@ -72,7 +71,7 @@ public class WorldIO {
         return INSTANCE;
     }
 
-    public static synchronized WorldIO newInstance(String ip, int port, int world) throws IOException {
+    public static synchronized WorldIO newInstance(String ip, int port, long world) throws IOException {
         INSTANCE = new WorldIO(ip, port, world);
         return INSTANCE;
     }
@@ -93,7 +92,7 @@ public class WorldIO {
      * @param worldId
      * @throws IOException
      */
-    private void connectToWorld(int worldId) throws IOException {
+    private void connectToWorld(long worldId) throws IOException {
         // add init warehouses
         List<Warehouse> wareHouseList = new ArrayList<>();
         warehousePos.stream().forEach(pos -> {
@@ -111,6 +110,7 @@ public class WorldIO {
         receiveFromWorld(connectedBuilder);
         WorldAmazon.AConnected connected = connectedBuilder.build();
         logger.info("Receive connected from world:\n" + connected);
+        socket.setSoTimeout(50);
     }
 
     /**
