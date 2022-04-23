@@ -26,6 +26,10 @@
             leadership
         </property>
 
+        <property name="hibernate.connection.isolation">
+            8
+        </property>
+
 
     </session-factory>
 </hibernate-configuration>

@@ -1,5 +1,7 @@
 package amazon.backend.service;
 
+import amazon.backend.DAO.PackageDao;
+import amazon.backend.DAO.ProductDao;
 import amazon.backend.IO.WorldIO;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -24,9 +26,18 @@ public class ProductArrivedService implements Runnable {
     // send ack back
     worldIO.sendAck(aPurchaseMore.getSeqnum());
 
-    // TODO update databse, product arrived
+    for (WorldAmazon.AProduct aProduct: aPurchaseMore.getThingsList()) {
+      // update databse, product arrived
+      ProductDao productDao = new ProductDao();
+      long packageId = productDao.productBought(aProduct.getId(), aProduct.getCount());
 
+      // TODO check if the package is full, ask for packing if so
 
-    // TODO check if the package is full, ask for packing if so
+    }
   }
+
+//  public boolean checkIfPackageReady() {
+//    PackageDao packageDao = new PackageDao();
+//
+//  }
 }

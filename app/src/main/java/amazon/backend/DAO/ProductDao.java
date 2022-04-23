@@ -37,12 +37,6 @@ public class ProductDao {
         session.close();
     }
 
-    /**
-     * Select a product by its priamry key (id, packageId)
-     * @param id
-     * @param packageId
-     * @return
-     */
     public Product getOne(long packageId) {
         Session session = factory.openSession();
         Transaction transaction = session.beginTransaction();
@@ -82,25 +76,36 @@ public class ProductDao {
     }
 
 
-    public void productBought(long productId, int count) { // TODO add concurrency
-        Session session = factory.openSession();
-        Transaction transaction = session.beginTransaction();
+    public long productBought(long productId, int count) { // TODO add concurrency
+        while (true) {
+            Session session = factory.openSession();
+            Transaction transaction = session.beginTransaction();
 
-        String sql = "select * from product where product_id = ? and count = ? " +
-                "and buy_seq!=null order by buy_seq asc limit 1";
-        List<Product> results = session.createNativeQuery(sql, Product.class).setParameter(1, productId)
-                .setParameter(2, count)
-                .list();
-        if (results.size() < 1) {
-            logger.error("Arrived product not in record: " + productId + " * " + count);
+            String sql = "select * from product where product_id = ? and count = ? " +
+                    "and buy_seq is not null and is_bought is not true order by buy_seq asc limit 1";
+            List<Product> results = session.createNativeQuery(sql, Product.class).setParameter(1, productId)
+                    .setParameter(2, count)
+                    .list();
+            try {
+                Product product = results.get(0);
+                product.setBought(true);
+                session.merge(product);
+                transaction.commit();
+                logger.info("Product arrived: " + productId + " * " + count);
+                return product.getPackageId();
+            } catch (IndexOutOfBoundsException e) {
+                logger.error("Arrived product not in record: " + productId + " * " + count);
+                return -1;
+            } catch (Exception e) {
+                logger.warn(e.getMessage());
+            }
+            finally {
+                session.close();
+            }
         }
-        else {
-            Product product = results.get(0);
-            product.setBought(true);
-            session.merge(product);
-        }
-
-        transaction.commit();
-        session.close();
     }
+
+//    public boolean checkPackageReady(long packageId) {
+//
+//    }
 }

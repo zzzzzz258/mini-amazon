@@ -1,6 +1,7 @@
 package amazon.backend.IO;
 
 import amazon.backend.manager.AckManager;
+import amazon.backend.manager.LogisticsManager;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import protobuf.WorldAmazon;
@@ -19,10 +20,12 @@ public class WorldListener implements Runnable{
 
     WorldIO worldIO;
     AckManager ackManager;
+    LogisticsManager logisticsManager;
 
-    public WorldListener(WorldIO worldIO, AckManager ackManager) {
+    public WorldListener(WorldIO worldIO, AckManager ackManager, LogisticsManager logisticsManager) {
         this.worldIO = worldIO;
         this.ackManager = ackManager;
+        this.logisticsManager = logisticsManager;
         logger.info("New WorldListener instance constructed");
     }
 
@@ -30,8 +33,8 @@ public class WorldListener implements Runnable{
         return INSTANCE;
     }
 
-    public static synchronized WorldListener newInstance(WorldIO worldIO, AckManager ackManager) {
-        INSTANCE = new WorldListener(worldIO, ackManager);
+    public static synchronized WorldListener newInstance(WorldIO worldIO, AckManager ackManager, LogisticsManager logisticsManager) {
+        INSTANCE = new WorldListener(worldIO, ackManager, logisticsManager);
         return INSTANCE;
     }
 
@@ -47,8 +50,8 @@ public class WorldListener implements Runnable{
 
     private void dispatchPurchased(List<WorldAmazon.APurchaseMore> aPurchaseMoreList) {
         for (WorldAmazon.APurchaseMore aPurchaseMore: aPurchaseMoreList) {
-            // TODO: do real dispatch
-            //System.out.println(aPurchaseMore);
+            logger.info("Receive: \n" + aPurchaseMore);
+            logisticsManager.purchaseArrived(aPurchaseMore);
         }
     }
 

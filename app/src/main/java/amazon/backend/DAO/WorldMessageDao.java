@@ -8,6 +8,7 @@ import org.hibernate.HibernateException;
 import org.hibernate.Session;
 import org.hibernate.SessionFactory;
 import org.hibernate.Transaction;
+import org.postgresql.util.PSQLException;
 
 public class WorldMessageDao {
 
@@ -82,24 +83,28 @@ public class WorldMessageDao {
      * @param seqNum
      */
     public void ackOne(long seqNum) {
-        Session session = factory.openSession();
-        Transaction transaction = null;
-        try {
-            transaction = session.beginTransaction();
+        while (true) {
+            Session session = factory.openSession();
+            Transaction transaction = null;
+            try {
+                transaction = session.beginTransaction();
 
-            WorldMessage worldMessage = session.get(WorldMessage.class, seqNum);
-            worldMessage.setAcked(true);
-            session.merge(worldMessage);
+                WorldMessage worldMessage = session.get(WorldMessage.class, seqNum);
+                worldMessage.setAcked(true);
+                session.merge(worldMessage);
 
-            transaction.commit();
-            logger.info("Ack " + seqNum + " successful");
-        }
-        catch (NullPointerException e) {
-            logger.error("Ack " + seqNum + " fails, record doesn't exists");
-            transaction.rollback();
-        }
-        finally {
-            session.close();
+                transaction.commit();
+                logger.info("Ack " + seqNum + " successful");
+                session.close();
+                return;
+            } catch (NullPointerException e) {
+                logger.error("Ack " + seqNum + " fails, record doesn't exists");
+                transaction.rollback();
+            } catch (Exception e) {
+                logger.warn(e.getMessage());
+            } finally {
+                session.close();
+            }
         }
     }
 }

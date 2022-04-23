@@ -28,7 +28,9 @@ public class App {
         AckManager.newInstance(sessionFactory);
         LogisticsManager.newInstance(sessionFactory);
         //WebListener.newInstance(WebIO.getInstance(), LogisticsManager.getInstance());
-        WorldListener.newInstance(WorldIO.getInstance(), AckManager.getInstance());
+        WorldListener.newInstance(WorldIO.getInstance()
+                , AckManager.getInstance()
+                , LogisticsManager.getInstance());
     }
 
     public void start() throws IOException {

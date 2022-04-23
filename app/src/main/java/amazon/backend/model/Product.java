@@ -13,7 +13,9 @@ public class Product {
     private long productId;
     private String description;
     private int count;
-    private long buySeq;
+    @Column(name = "buy_seq")
+    private Long buySeq;
+    @Column(name = "is_bought")
     private boolean isBought;
 
     public Product() {
@@ -28,6 +30,7 @@ public class Product {
         this.productId = productId;
         this.description = description;
         this.count = count;
+        this.buySeq = null;
     }
 
     public long getPackageId() {
@@ -62,11 +65,11 @@ public class Product {
         this.count = count;
     }
 
-    public long getBuySeq() {
+    public Long getBuySeq() {
         return buySeq;
     }
 
-    public void setBuySeq(long buySeq) {
+    public void setBuySeq(Long buySeq) {
         this.buySeq = buySeq;
     }
 
