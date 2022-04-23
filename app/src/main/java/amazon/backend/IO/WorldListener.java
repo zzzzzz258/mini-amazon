@@ -45,6 +45,7 @@ public class WorldListener implements Runnable{
         logger.info("Response: " + responses);
         dispatchPurchased(responses.getArrivedList());
         dispathAcks(responses.getAcksList());
+        dispatchPacked(responses.getReadyList());
         // TODO: dispatch others
     }
 
@@ -52,6 +53,13 @@ public class WorldListener implements Runnable{
         for (WorldAmazon.APurchaseMore aPurchaseMore: aPurchaseMoreList) {
             logger.info("Receive: \n" + aPurchaseMore);
             logisticsManager.purchaseArrived(aPurchaseMore);
+        }
+    }
+
+    private void dispatchPacked(List<WorldAmazon.APacked> aPackeds) {
+        for (WorldAmazon.APacked aPacked: aPackeds) {
+            logger.info("Receive: \n" + aPacked);
+            logisticsManager.packagePacked(aPacked);
         }
     }
 

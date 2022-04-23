@@ -25,7 +25,7 @@ public class ProductArrivedService implements Runnable {
 
   @Override
   public void run() {
-    logger.info("Processing response APurchaseMore\n" + aPurchaseMore);
+    logger.info("Processing response APurchaseMore\n" + aPurchaseMore.getSeqnum());
     WorldIO worldIO = WorldIO.getInstance();
 
     // send ack back
@@ -48,6 +48,8 @@ public class ProductArrivedService implements Runnable {
         worldMessageDao.addOne(new WorldMessage(seqNum));
         packageDao.setPackSeq(packageId, seqNum);
       }
+
+      // TODO send status packing to web
     }
   }
 

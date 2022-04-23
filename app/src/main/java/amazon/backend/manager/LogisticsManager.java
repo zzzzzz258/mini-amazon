@@ -1,5 +1,6 @@
 package amazon.backend.manager;
 
+import amazon.backend.service.PackagePackedService;
 import amazon.backend.service.ProductArrivedService;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -18,10 +19,12 @@ public class LogisticsManager {
 
     ThreadPoolExecutor orderConfirmedPool;
     ThreadPoolExecutor productArrivedPool;
+    ThreadPoolExecutor packagePackedPool;
 
     private LogisticsManager() {
         orderConfirmedPool = (ThreadPoolExecutor) Executors.newFixedThreadPool(50);
         productArrivedPool = (ThreadPoolExecutor) Executors.newFixedThreadPool(50);
+        packagePackedPool = (ThreadPoolExecutor) Executors.newFixedThreadPool(50);
         logger.info("Logistics manager instance constructed");
     }
 
@@ -50,6 +53,11 @@ public class LogisticsManager {
 
     public synchronized void purchaseArrived(WorldAmazon.APurchaseMore aPurchaseMore) {
         logger.info("Logistics manager gets APurchaseMore: " + aPurchaseMore.getSeqnum());
-        orderConfirmedPool.execute(new ProductArrivedService(aPurchaseMore));
+        productArrivedPool.execute(new ProductArrivedService(aPurchaseMore));
+    }
+
+    public synchronized void packagePacked(WorldAmazon.APacked aPacked) {
+        logger.info("Logistics manager get APacked: " + aPacked.getSeqnum());
+        packagePackedPool.execute(new PackagePackedService(aPacked));
     }
 }

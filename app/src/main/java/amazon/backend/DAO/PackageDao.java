@@ -88,18 +88,50 @@ public class PackageDao {
     }
 
     public void setPackSeq(long id, long seqNum) {
-        Session session = factory.openSession();
-        Transaction transaction = session.beginTransaction();
+        while (true) {
+            Session session = factory.openSession();
+            try {
+                Transaction transaction = session.beginTransaction();
 
-        Package pkg = session.get(Package.class, id);
-        if (pkg == null) {
-            logger.fatal("Logic error, get warehouse id returns null");
+                Package pkg = session.get(Package.class, id);
+                if (pkg == null) {
+                    logger.fatal("Logic error, get warehouse id returns null");
+                }
+                pkg.setPackSeq(seqNum);
+                session.merge(pkg);
+                transaction.commit();
+
+                session.close();
+                return;
+            } catch (Exception e) {
+                logger.warn(e.getMessage());
+            } finally {
+                session.close();
+            }
         }
-        pkg.setPackSeq(seqNum);
-        session.merge(pkg);
-        transaction.commit();
+    }
 
-        session.close();
+    public void setPacked(long id) {
+        while (true) {
+            Session session = factory.openSession();
+            try {
+                Transaction transaction = session.beginTransaction();
 
+                Package pkg = session.get(Package.class, id);
+                if (pkg == null) {
+                    logger.fatal("Logic error, get warehouse id returns null");
+                }
+                pkg.setPacked(true);
+                session.merge(pkg);
+
+                transaction.commit();
+                session.close();
+                return;
+            } catch (Exception e) {
+                logger.warn(e.getMessage());
+            } finally {
+                session.close();
+            }
+        }
     }
 }
