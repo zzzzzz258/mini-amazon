@@ -2,12 +2,16 @@ package amazon.backend.DAO;
 
 import amazon.backend.SingletonSessionFactory;
 import amazon.backend.model.Product;
-import amazon.backend.model.ProductPK;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.hibernate.Session;
 import org.hibernate.SessionFactory;
 import org.hibernate.Transaction;
 
+import java.util.List;
+
 public class ProductDao {
+    Logger logger = LogManager.getLogger();
 
     private SessionFactory factory;
 
@@ -39,12 +43,11 @@ public class ProductDao {
      * @param packageId
      * @return
      */
-    public Product getOne(long id, long packageId) {
-        ProductPK productPK = new ProductPK(id, packageId);
+    public Product getOne(long packageId) {
         Session session = factory.openSession();
         Transaction transaction = session.beginTransaction();
 
-        Product product = session.get(Product.class, productPK);
+        Product product = session.get(Product.class, packageId);
 
         transaction.commit();
         session.close();
@@ -60,23 +63,42 @@ public class ProductDao {
         Session session = factory.openSession();
         Transaction transaction = session.beginTransaction();
 
-        session.remove(new Product(id, "", 0, packageId));
+        session.remove(new Product(id));
 
         transaction.commit();
         session.close();
     }
 
-    /**
-     *
-     * @param seqNum
-     */
-    public void setBuySeq(long id, long packageId, long seqNum) {
+    public void setBuySeq(long packageId, long seqNum) {
         Session session = factory.openSession();
         Transaction transaction = session.beginTransaction();
 
-        Product product = session.get(Product.class, new ProductPK(id, packageId));
+        Product product = session.get(Product.class, packageId);
         product.setBuySeq(seqNum);
         session.merge(product);
+
+        transaction.commit();
+        session.close();
+    }
+
+
+    public void productBought(long productId, int count) { // TODO add concurrency
+        Session session = factory.openSession();
+        Transaction transaction = session.beginTransaction();
+
+        String sql = "select * from product where product_id = ? and count = ? " +
+                "and buy_seq!=null order by buy_seq asc limit 1";
+        List<Product> results = session.createNativeQuery(sql, Product.class).setParameter(1, productId)
+                .setParameter(2, count)
+                .list();
+        if (results.size() < 1) {
+            logger.error("Arrived product not in record: " + productId + " * " + count);
+        }
+        else {
+            Product product = results.get(0);
+            product.setBought(true);
+            session.merge(product);
+        }
 
         transaction.commit();
         session.close();

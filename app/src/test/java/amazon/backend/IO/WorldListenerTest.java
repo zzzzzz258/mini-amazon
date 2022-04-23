@@ -1,8 +1,12 @@
 package amazon.backend.IO;
 
+import amazon.backend.DAO.PackageDao;
+import amazon.backend.DAO.WorldMessageDao;
 import amazon.backend.SingletonSessionFactory;
 import amazon.backend.manager.AckManager;
+import amazon.backend.model.Package;
 import amazon.backend.model.Product;
+import amazon.backend.model.WorldMessage;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.junit.jupiter.api.Test;
@@ -35,9 +39,14 @@ class WorldListenerTest {
     thread.setName("World Listener Thread");
     thread.start();
 
+    WorldMessageDao worldMessageDao = new WorldMessageDao();
+    PackageDao packageDao = new PackageDao();
+
     for (int i = 0; i < 10; i++) {
       Thread.sleep(1000);
-      worldIO.sendAPurchaseMore(worldIO.warehouseIds.get(0), List.of(new Product(99, "a good product", 2)));
+      long packageId = packageDao.addOne(new Package(worldIO.warehouseIds.get(0), i, 1, 1));
+      long seqNum = worldIO.sendAPurchaseMore(worldIO.warehouseIds.get(0), List.of(new Product(packageId, 99, "a good product", 2)));
+      worldMessageDao.addOne(new WorldMessage(seqNum));
     }
 
     while (true);

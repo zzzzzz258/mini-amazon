@@ -5,42 +5,45 @@ import jakarta.persistence.*;
 import java.io.Serializable;
 
 @Entity
-@IdClass(ProductPK.class)
-public class Product implements Serializable {
-    @Id
-    private long id;
-    private String description;
-    private int count;
+public class Product {
     @Id
     @Column(name = "package_id")
     private long packageId;
-    @Column(name = "buy_seq")
-    private Long buySeq;
-    @Column(name = "is_bought")
-    private boolean ifBought;
+    @Column(name = "product_id")
+    private long productId;
+    private String description;
+    private int count;
+    private long buySeq;
+    private boolean isBought;
 
     public Product() {
     }
 
-    public Product(long id, String description, int count) {
-        this.id = id;
-        this.description = description;
-        this.count = count;
-    }
-
-    public Product(long id, String description, int count, long packageId) {
-        this.id = id;
-        this.description = description;
-        this.count = count;
+    public Product(long packageId) {
         this.packageId = packageId;
     }
 
-    public long getId() {
-        return id;
+    public Product(long packageId, long productId, String description, int count) {
+        this.packageId = packageId;
+        this.productId = productId;
+        this.description = description;
+        this.count = count;
     }
 
-    public void setId(long id) {
-        this.id = id;
+    public long getPackageId() {
+        return packageId;
+    }
+
+    public void setPackageId(long packageId) {
+        this.packageId = packageId;
+    }
+
+    public long getProductId() {
+        return productId;
+    }
+
+    public void setProductId(long productId) {
+        this.productId = productId;
     }
 
     public String getDescription() {
@@ -59,27 +62,19 @@ public class Product implements Serializable {
         this.count = count;
     }
 
-    public long getPackageId() {
-        return packageId;
-    }
-
-    public void setPackageId(long packageId) {
-        this.packageId = packageId;
-    }
-
-    public Long getBuySeq() {
+    public long getBuySeq() {
         return buySeq;
     }
 
-    public void setBuySeq(Long buySeq) {
+    public void setBuySeq(long buySeq) {
         this.buySeq = buySeq;
     }
 
-    public boolean isIfBought() {
-        return ifBought;
+    public boolean isBought() {
+        return isBought;
     }
 
-    public void setIfBought(boolean ifBought) {
-        this.ifBought = ifBought;
+    public void setBought(boolean bought) {
+        isBought = bought;
     }
 }

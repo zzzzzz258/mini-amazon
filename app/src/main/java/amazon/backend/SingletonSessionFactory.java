@@ -1,8 +1,8 @@
 package amazon.backend;
 
+import amazon.backend.DAO.WorldMessageDao;
+import amazon.backend.model.*;
 import amazon.backend.model.Package;
-import amazon.backend.model.Product;
-import amazon.backend.model.Warehouse;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.hibernate.SessionFactory;
@@ -19,6 +19,7 @@ public class SingletonSessionFactory {
                     .addAnnotatedClass(Product.class)
                     .addAnnotatedClass(Package.class)
                     .addAnnotatedClass(Warehouse.class)
+                    .addAnnotatedClass(WorldMessage.class)
                     .buildSessionFactory();
             Logger logger = LogManager.getLogger();
             logger.info("Initialize session factory");

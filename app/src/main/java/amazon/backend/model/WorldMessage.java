@@ -1,10 +1,18 @@
 package amazon.backend.model;
 
+import jakarta.persistence.*;
+import org.checkerframework.checker.units.qual.C;
 import org.hibernate.cfg.annotations.reflection.internal.XMLContext;
 
+@Entity
+@Table(name = "world_message")
 public class WorldMessage {
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "sequence_num")
     private long sequenceNum;
     private boolean acked;
+    @Column(name = "sent_time")
     private long sentTime;
     private int simspeed;
     private boolean disconnect;

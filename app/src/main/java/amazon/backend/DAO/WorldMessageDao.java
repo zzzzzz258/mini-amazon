@@ -32,7 +32,7 @@ public class WorldMessageDao {
 
         try {
             transaction = session.beginTransaction();
-            session.persist(worldMessage);
+            session.merge(worldMessage);
             transaction.commit();
         }
         catch (HibernateException e) {

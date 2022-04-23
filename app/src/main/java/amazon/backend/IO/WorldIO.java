@@ -1,6 +1,7 @@
 package amazon.backend.IO;
 
 import amazon.backend.DAO.WarehouseDao;
+import amazon.backend.model.Package;
 import amazon.backend.model.Product;
 import amazon.backend.model.Warehouse;
 import org.apache.logging.log4j.LogManager;
@@ -15,6 +16,9 @@ import java.net.Socket;
 import java.net.SocketTimeoutException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.TimeUnit;
+import java.util.concurrent.locks.Lock;
+import java.util.concurrent.locks.ReentrantLock;
 import java.util.stream.Collectors;
 
 public class WorldIO {
@@ -30,6 +34,7 @@ public class WorldIO {
     private boolean isBufferEmpty;
 
     private WorldAmazon.ACommands.Builder bufferBuilder;
+    Lock bufferLock = new ReentrantLock();
 
     /**
      * The warehosue positions to initialize
@@ -156,10 +161,25 @@ public class WorldIO {
         products.stream().forEach(p -> builder.addThings(createAProduct(p)));
         long tSeqNum = getSeqNum();
         builder.setSeqnum(tSeqNum);
-        bufferBuilder.addBuy(builder.build());
 
-        logger.info("Add new APurchaseMore to BufferBuilder:\n" + builder.build());
-        bufferNotEmpty();
+        try {
+            if (bufferLock.tryLock(10, TimeUnit.SECONDS)) {
+                try {
+                    bufferBuilder.addBuy(builder.build());
+                    logger.info("Add new APurchaseMore to BufferBuilder:\n" + builder.build());
+                    bufferNotEmpty();
+                }
+                finally {
+                    bufferLock.unlock();
+                }
+            }
+            else {
+                logger.fatal("Bad design");
+            }
+        } catch (InterruptedException e) {
+            logger.error("InterruptedException in sendBufferToWorld:\n" + e.getStackTrace());
+        }
+
         return tSeqNum;
     }
 
@@ -170,10 +190,33 @@ public class WorldIO {
      */
     private WorldAmazon.AProduct createAProduct(Product product) {
         return WorldAmazon.AProduct.newBuilder()
-                .setId(product.getId())
+                .setId(product.getProductId())
                 .setDescription(product.getDescription())
                 .setCount(product.getCount())
                 .build();
+    }
+
+    /**
+     * Method to add ack to buffer
+     * @param num
+     */
+    public void sendAck(long num) {
+        try {
+            if (bufferLock.tryLock(10, TimeUnit.SECONDS)) {
+                try {
+                    bufferBuilder.addAcks(num);
+                    logger.info("Add new ack to send to world buffer: " + num);
+                    bufferNotEmpty();
+                }
+                finally {
+                    bufferLock.unlock();
+                }
+            } else {
+                logger.fatal("Bad design: cannot send Ack due to lock");
+            }
+        } catch (InterruptedException e) {
+            logger.error("InterruptedException in sendBufferToWorld:\n" + e.getStackTrace());
+        }
     }
 
     /**
@@ -236,11 +279,25 @@ public class WorldIO {
      * @throws IOException
      */
     public void sendBufferToWorld() throws IOException {
-        WorldAmazon.ACommands aCommands = bufferBuilder.build();
-        logger.info("Send ACommands to world:\n" + aCommands);
-        sendToWorld(aCommands.toByteArray());
-        bufferBuilder.clear();
-        bufferEmpty();
+        try {
+            if (bufferLock.tryLock(1, TimeUnit.SECONDS)) {
+                try {
+                    WorldAmazon.ACommands aCommands = bufferBuilder.build();
+                    logger.info("Send ACommands to world:\n" + aCommands);
+                    sendToWorld(aCommands.toByteArray());
+                    bufferBuilder.clear();
+                    bufferEmpty();
+                } catch (Exception e) {
+                    logger.error("Unexpected exception in sendBufferToWorld:\n"+e.getStackTrace());
+                } finally {
+                    bufferLock.unlock();
+                }
+            } else {
+                logger.warn("Send buffer to world fails due to lock");
+            }
+        } catch (InterruptedException e) {
+            logger.error("InterruptedException in sendBufferToWorld:\n" + e.getStackTrace());
+        }
     }
 
     /**

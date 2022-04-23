@@ -42,11 +42,11 @@ class WorldIOTest {
         amazonIO =  WorldIO.newInstance(ip, amazonPort, worldId);
     }
 
-    @Test
-    public void test_send_APurchaseMore() throws IOException {
-        test_connect_world();
-        List<Product> productList = new ArrayList<Product>();
-        productList.add(new Product(1, "holy shit", 2));
-        amazonIO.sendAPurchaseMore(1, productList);
-    }
+//    @Test
+//    public void test_send_APurchaseMore() throws IOException {
+//        test_connect_world();
+//        List<Product> productList = new ArrayList<Product>();
+//        productList.add(new Product(1, "holy shit", 2));
+//        amazonIO.sendAPurchaseMore(1, productList);
+//    }
 }

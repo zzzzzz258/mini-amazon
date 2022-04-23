@@ -35,7 +35,7 @@ public class WebIO {
     private WebIO(int port) throws IOException {
         ServerSocket serverSocket = new ServerSocket(port);
         socket = serverSocket.accept();
-        logger.info("Web service connected");
+        logger.info("Web service connected, port: " + socket.getPort());
         socket.setSoTimeout(30);
         outputStream = socket.getOutputStream();
         inputStream = socket.getInputStream();

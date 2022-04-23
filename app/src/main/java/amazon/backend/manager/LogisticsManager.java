@@ -40,7 +40,7 @@ public class LogisticsManager {
     }
 
     public synchronized void confirmOrder(FrontBack.FBMessage order) {
-      System.out.println("Manager calls confirm Order");
+        logger.info("Logistics Manager gets FB message: " + order.getPid());
         orderConfirmedPool.execute(new DealWebOrderService(order));
     }
 }
