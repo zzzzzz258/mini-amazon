@@ -61,15 +61,15 @@ public class WebIO {
         return INSTANCE;
     }
 
-    public void sendStatus(int orderId, String status) throws IOException {
+    public void sendStatus(int orderId, String status){
         sendBFMessage(orderId, status, null, null);
     }
 
-    public void sendTrackingNum(int orderId, String trackingNum) throws IOException {
+    public void sendTrackingNum(int orderId, String trackingNum){
         sendBFMessage(orderId, null, trackingNum, null);
     }
 
-    public void sendIsMatched(int orderId, boolean isMatched) throws IOException {
+    public void sendIsMatched(int orderId, boolean isMatched){
         sendBFMessage(orderId, null, null, isMatched);
     }
 
@@ -81,7 +81,7 @@ public class WebIO {
    * @param isMatched
    * @throws IOException
    */
-    public void sendBFMessage(int orderId, String status, String trackingNum, Boolean isMatched) throws IOException {
+    public void sendBFMessage(int orderId, String status, String trackingNum, Boolean isMatched){
       FrontBack.BFMessage.Builder builder = FrontBack.BFMessage.newBuilder();
       builder.setPid(orderId);
       if (status != null) {

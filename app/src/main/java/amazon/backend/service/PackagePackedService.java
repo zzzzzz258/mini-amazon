@@ -1,10 +1,13 @@
 package amazon.backend.service;
 
 import amazon.backend.DAO.PackageDao;
+import amazon.backend.IO.WebIO;
 import amazon.backend.IO.WorldIO;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import protobuf.WorldAmazon;
+
+import java.io.IOException;
 
 public class PackagePackedService implements Runnable {
 
@@ -27,6 +30,10 @@ public class PackagePackedService implements Runnable {
 
     // update databse, record packed
     packageDao.setPacked(aPacked.getShipid());
+
+    // send to zz ready for shipment
+    WebIO webIO = WebIO.getInstance();
+    webIO.sendStatus(packageDao.getOrderId(aPacked.getShipid()), "Ready for shipment");
 
     // TODO send to ups for pick our shit
 

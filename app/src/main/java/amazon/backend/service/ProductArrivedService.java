@@ -3,6 +3,7 @@ package amazon.backend.service;
 import amazon.backend.DAO.PackageDao;
 import amazon.backend.DAO.ProductDao;
 import amazon.backend.DAO.WorldMessageDao;
+import amazon.backend.IO.WebIO;
 import amazon.backend.IO.WorldIO;
 import amazon.backend.model.Product;
 import amazon.backend.model.WorldMessage;
@@ -49,7 +50,6 @@ public class ProductArrivedService implements Runnable {
         packageDao.setPackSeq(packageId, seqNum);
       }
 
-      // TODO send status packing to web
     }
   }
 

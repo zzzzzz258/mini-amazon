@@ -55,11 +55,7 @@ public class DealWebOrderService implements Runnable {
 
       // Send response to web
       WebIO webIO = WebIO.getInstance();
-      try {
-          webIO.sendStatus(pkg.getOrderId(), "Packing");
-      } catch (IOException e) {
-          e.printStackTrace();
-      }
+      webIO.sendStatus(pkg.getOrderId(), "Packing");
 
       // send purchase request to world
       WorldIO worldIO = WorldIO.getInstance();

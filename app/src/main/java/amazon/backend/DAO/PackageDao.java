@@ -134,4 +134,12 @@ public class PackageDao {
             }
         }
     }
+
+    public int getOrderId(long packageId) {
+        Session session = factory.openSession();
+        Transaction transaction = session.beginTransaction();
+        Package pkg = session.get(Package.class, packageId);
+        session.close();
+        return pkg.getOrderId();
+    }
 }
