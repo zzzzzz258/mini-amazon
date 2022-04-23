@@ -53,8 +53,10 @@ class WorldListenerTest {
       Product product = new Product(packageId, 99, "a good product", 2);
       productDao.addOne(product);
       long seqNum = worldIO.sendAPurchaseMore(worldIO.warehouseIds.get(0), List.of(product));
-      productDao.setBuySeq(packageId, seqNum);
+
       worldMessageDao.addOne(new WorldMessage(seqNum));
+
+      productDao.setBuySeq(packageId, seqNum);
     }
 
     while (true);

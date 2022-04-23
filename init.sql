@@ -6,7 +6,7 @@ create table warehouse
 );
 create table world_message
 (
-    sequence_num bigint primary key generated always as IDENTITY,
+    sequence_num bigint primary key,
     acked        boolean default false,
     sent_time    bigint,
     simspeed     integer default null,
@@ -27,7 +27,7 @@ create table product
 (
   package_id bigint references package(id) primary key,
   product_id bigint,
-  description text;
+  description text,
   count      int,
   buy_seq    bigint default null references world_message(sequence_num) on delete set null,
   is_bought  boolean default false

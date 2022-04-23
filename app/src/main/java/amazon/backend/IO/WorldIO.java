@@ -177,7 +177,7 @@ public class WorldIO {
                 logger.fatal("Bad design");
             }
         } catch (InterruptedException e) {
-            logger.error("InterruptedException in sendBufferToWorld:\n" + e.getStackTrace());
+            logger.error("InterruptedException in sendAPurchaseMore:\n" + e.getStackTrace());
         }
 
         return tSeqNum;
@@ -194,6 +194,38 @@ public class WorldIO {
                 .setDescription(product.getDescription())
                 .setCount(product.getCount())
                 .build();
+    }
+
+    public long sendAPack(int warehouseNum, List<Product> things, long shipId) {
+        WorldAmazon.APack.Builder builder = WorldAmazon.APack.newBuilder().setWhnum(warehouseNum).setShipid(shipId);
+        things.stream().forEach(product -> {
+            builder.addThings(WorldAmazon.AProduct.newBuilder()
+                    .setId(product.getProductId())
+                    .setDescription(product.getDescription())
+                    .setCount(product.getCount()));
+        });
+        long tSeqNum = getSeqNum();
+        builder.setSeqnum(tSeqNum);
+
+        try {
+            if (bufferLock.tryLock(10, TimeUnit.SECONDS)) {
+                try {
+                    bufferBuilder.addTopack(builder.build());
+                    logger.info("Add new APack to BufferBuilder:\n" + builder.build());
+                    bufferNotEmpty();
+                }
+                finally {
+                    bufferLock.unlock();
+                }
+            }
+            else {
+                logger.fatal("Bad design");
+            }
+        } catch (InterruptedException e) {
+            logger.error("InterruptedException in sendAPack:\n" + e.getStackTrace());
+        }
+
+        return tSeqNum;
     }
 
     /**

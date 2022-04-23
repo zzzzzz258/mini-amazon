@@ -28,22 +28,23 @@ public class WorldMessageDao {
      * @param worldMessage
      */
     public void addOne(WorldMessage worldMessage) {
-        Session session = factory.openSession();
-        Transaction transaction = null;
+        while (true) {
+            Session session = factory.openSession();
+            Transaction transaction = null;
 
-        try {
-            transaction = session.beginTransaction();
-            session.merge(worldMessage);
-            transaction.commit();
-        }
-        catch (HibernateException e) {
-            if (transaction!=null) {
-                transaction.rollback();
+            try {
+                transaction = session.beginTransaction();
+                session.persist(worldMessage);
+                transaction.commit();
+                return;
+            } catch (HibernateException e) {
+                if (transaction != null) {
+                    transaction.rollback();
+                }
+                e.printStackTrace();
+            } finally {
+                session.close();
             }
-            e.printStackTrace();
-        }
-        finally {
-            session.close();
         }
     }
 

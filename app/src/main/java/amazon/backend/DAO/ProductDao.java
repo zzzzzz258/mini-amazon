@@ -76,7 +76,7 @@ public class ProductDao {
     }
 
 
-    public long productBought(long productId, int count) { // TODO add concurrency
+    public long productBought(long productId, int count) {
         while (true) {
             Session session = factory.openSession();
             Transaction transaction = session.beginTransaction();
@@ -105,7 +105,27 @@ public class ProductDao {
         }
     }
 
-//    public boolean checkPackageReady(long packageId) {
-//
-//    }
+    public boolean checkPackageReady(long packageId) {
+        Session session = factory.openSession();
+        Transaction transaction = session.beginTransaction();
+
+        String sql = "select * from product where package_id = ? and is_bought is not true";
+        List<Product> results = session.createNativeQuery(sql, Product.class).setParameter(1, packageId).list();
+
+        session.close();
+
+        return results.isEmpty();
+    }
+
+    public List<Product> getPackageProducts(long packageId) {
+        Session session = factory.openSession();
+        Transaction transaction = session.beginTransaction();
+
+        String sql = "select * from product where package_id = ?";
+        List<Product> results = session.createNativeQuery(sql, Product.class).setParameter(1, packageId).list();
+
+        session.close();
+
+        return results;
+    }
 }

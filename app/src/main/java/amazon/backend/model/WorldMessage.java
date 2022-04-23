@@ -8,7 +8,7 @@ import org.hibernate.cfg.annotations.reflection.internal.XMLContext;
 @Table(name = "world_message")
 public class WorldMessage {
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    //@GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "sequence_num")
     private long sequenceNum;
     private boolean acked;
