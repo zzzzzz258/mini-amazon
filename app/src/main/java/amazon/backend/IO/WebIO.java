@@ -109,6 +109,8 @@ public class WebIO {
           queue.poll();
         } catch (IOException e) {
           logger.fatal("Web IO fails, send BF message fails");
+        } catch (Exception e) {
+          e.printStackTrace();
         }
       }
     }

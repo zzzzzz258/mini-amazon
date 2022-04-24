@@ -11,7 +11,6 @@ import org.hibernate.SessionFactory;
 import java.io.IOException;
 
 public class App {
-
     private final int myWebPort = 2222;
     private final int myUpsPort = 6666;
     public static final String IP = "vcm-25372.vm.duke.edu";
@@ -24,20 +23,20 @@ public class App {
     public App() throws IOException {
         sessionFactory = SingletonSessionFactory.getSessionFactory();
         WorldIO.newInstance(IP, AMAZONPORT, WORLDID);
-        //WebIO.newInstance(myWebPort);
+        WebIO.newInstance(myWebPort);
         AckManager.newInstance(sessionFactory);
         LogisticsManager.newInstance(sessionFactory);
-        //WebListener.newInstance(WebIO.getInstance(), LogisticsManager.getInstance());
+        WebListener.newInstance(WebIO.getInstance(), LogisticsManager.getInstance());
         WorldListener.newInstance(WorldIO.getInstance()
                 , AckManager.getInstance()
                 , LogisticsManager.getInstance());
     }
 
     public void start() throws IOException {
-        //Thread webListener = new Thread(WebListener.getInstance(), "Web Listener");
+        Thread webListener = new Thread(WebListener.getInstance(), "Web Listener");
         Thread worldListener = new Thread(WorldListener.getInstance(), "World Listener");
 
-        //webListener.start();
+        webListener.start();
         worldListener.start();
     }
 
@@ -51,5 +50,7 @@ public class App {
 
         App app = new App();
         app.start();
+
+        while(true);
     }
 }

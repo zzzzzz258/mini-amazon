@@ -26,8 +26,9 @@
             leadership
         </property>
 
-        <!-- List of XML mapping files -->
-        <mapping resource = "WorldMessage.hbm.xml"/>
+        <property name="hibernate.connection.isolation">
+            8
+        </property>
 
 
     </session-factory>
