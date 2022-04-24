@@ -41,10 +41,9 @@ public class LogisticsManager {
 
     /**
      * Static method to create a new instance
-     * @param sessionFactory
      * @return
      */
-    public static synchronized LogisticsManager newInstance(SessionFactory sessionFactory) {
+    public static synchronized LogisticsManager newInstance() {
         INSTANCE = new LogisticsManager();
         return INSTANCE;
     }

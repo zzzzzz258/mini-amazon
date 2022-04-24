@@ -44,10 +44,10 @@ public class WorldListener implements Runnable{
         WorldAmazon.AResponses responses = responseBuilder.build();
         logger.info("Response: " + responses);
         dispatchPurchased(responses.getArrivedList());
-        dispathAcks(responses.getAcksList());
         dispatchPacked(responses.getReadyList());
         dispatchLoaded(responses.getLoadedList());
         printErrors(responses.getErrorList());
+        dispathAcks(responses.getAcksList());
         // TODO: dispatch status
     }
 
