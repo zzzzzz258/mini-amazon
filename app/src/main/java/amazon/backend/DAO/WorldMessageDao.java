@@ -163,4 +163,16 @@ public class WorldMessageDao {
 
         return results.size() > 0;
     }
+
+    public void clear() {
+        Session session = factory.openSession();
+        Transaction transaction = session.beginTransaction();
+
+        String sql = "delete from world_message";
+        session.createNativeQuery(sql).executeUpdate();
+        transaction.commit();
+        logger.info("Clear world_message table");
+
+        session.close();
+    }
 }

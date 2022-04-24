@@ -147,4 +147,16 @@ public class ProductDao {
 
         return null;
     }
+
+    public void clear() {
+        Session session = factory.openSession();
+        Transaction transaction = session.beginTransaction();
+
+        String sql = "delete from product";
+        session.createNativeQuery(sql).executeUpdate();
+        transaction.commit();
+        logger.info("Clear product table");
+
+        session.close();
+    }
 }

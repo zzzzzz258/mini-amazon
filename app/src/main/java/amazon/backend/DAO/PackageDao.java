@@ -261,4 +261,16 @@ public class PackageDao {
 
         return null;
     }
+
+    public void clear() {
+        Session session = factory.openSession();
+        Transaction transaction = session.beginTransaction();
+
+        String sql = "delete from package";
+        session.createNativeQuery(sql).executeUpdate();
+        transaction.commit();
+        logger.info("Clear pakcage table");
+
+        session.close();
+    }
 }

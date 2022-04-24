@@ -7,6 +7,7 @@ import amazon.backend.model.Product;
 import amazon.backend.model.Warehouse;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import org.postgresql.shaded.com.ongres.scram.common.bouncycastle.pbkdf2.Pack;
 import protobuf.WorldAmazon;
 import com.google.protobuf.CodedInputStream;
 import com.google.protobuf.CodedOutputStream;
@@ -65,8 +66,11 @@ public class WorldIO {
         isBufferEmpty = true;
         logger.info("Construct new WorldIO: "+ip+":"+port+" in world "+worldId);
 
-        //WorldMessageDao worldMessageDao = new WorldMessageDao();
-        //worldMessageDao.clear();
+        new ProductDao().clear();
+        new PackageDao().clear();
+        new WarehouseDao().clear();
+        new WorldMessageDao().clear();
+
     }
 
     public static synchronized WorldIO getInstance() {

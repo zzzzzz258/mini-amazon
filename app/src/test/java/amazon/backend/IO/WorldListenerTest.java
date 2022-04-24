@@ -33,6 +33,8 @@ class WorldListenerTest {
 
     logger.info("***************************test_puchase_with_world starts***************************");
 
+    SingletonSessionFactory.getSessionFactory();
+
     UpsWorldIO upsWorldIO = new UpsWorldIO(ip, portu);
     upsWorldIO.sendConnect();
     worldId = upsWorldIO.recvConnected();
