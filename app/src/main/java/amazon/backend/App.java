@@ -22,10 +22,13 @@ public class App {
 
     public App() throws IOException {
         sessionFactory = SingletonSessionFactory.getSessionFactory();
+        UpsIO upsIO = UpsIO.newInstance(myUpsPort);
+        WORLDID = upsIO.receiveConnectFromUps();
         WorldIO.newInstance(IP, AMAZONPORT, WORLDID);
+        upsIO.sendConnectToUps();
         WebIO.newInstance(myWebPort);
         AckManager.newInstance(sessionFactory);
-        LogisticsManager.newInstance(sessionFactory);
+        LogisticsManager.newInstance();
         WebListener.newInstance(WebIO.getInstance(), LogisticsManager.getInstance());
         WorldListener.newInstance(WorldIO.getInstance()
                 , AckManager.getInstance()
@@ -35,18 +38,20 @@ public class App {
     public void start() throws IOException {
         Thread webListener = new Thread(WebListener.getInstance(), "Web Listener");
         Thread worldListener = new Thread(WorldListener.getInstance(), "World Listener");
+        Thread upsListener = new Thread(UpsListener.getInstance(), "Ups Listener");
 
         webListener.start();
         worldListener.start();
+        upsListener.start();
     }
 
     public static void main(String[] args) throws IOException, InterruptedException {
         // In testing, I need a ups io
-        UpsWorldIO upsWorldIO = new UpsWorldIO(IP, UPSPORT);
-        upsWorldIO.sendConnect();
-        WORLDID = upsWorldIO.recvConnected();
-        Thread thread = new Thread(upsWorldIO);
-        thread.start();
+//        UpsWorldIO upsWorldIO = new UpsWorldIO(IP, UPSPORT);
+//        upsWorldIO.sendConnect();
+//        WORLDID = upsWorldIO.recvConnected();
+//        Thread thread = new Thread(upsWorldIO);
+//        thread.start();
 
         App app = new App();
         app.start();

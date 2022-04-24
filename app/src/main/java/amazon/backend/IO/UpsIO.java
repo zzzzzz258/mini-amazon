@@ -45,7 +45,6 @@ public class UpsIO {
     logger.info("Ups connected, port:" + socket.getPort());
     outputStream = socket.getOutputStream();
     inputStream = socket.getInputStream();
-    connectToUps();
     bufferBuilder = AmazonUps.AUCommand.newBuilder();
     isBufferEmpty = true;
     seqNum = 1;
@@ -72,12 +71,17 @@ public class UpsIO {
     isBufferEmpty = true;
   }
 
-  private void connectToUps() throws IOException {
+
+  public long receiveConnectFromUps() throws IOException {
     // wait for response
     AmazonUps.UAConnect.Builder connectedBuilder = AmazonUps.UAConnect.newBuilder();
     receiveFromUps(connectedBuilder);
     AmazonUps.UAConnect connected = connectedBuilder.build();
     logger.info("Receive connect from ups:\n" + connected);
+    return connected.getWorldid();
+  }
+
+  public void sendConnectToUps() throws IOException {
     // send connect request
     AmazonUps.AUConnected connect = createAConnect();
     sendToUps(connect.toByteArray());
