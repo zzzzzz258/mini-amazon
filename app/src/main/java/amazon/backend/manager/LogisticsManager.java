@@ -1,11 +1,10 @@
 package amazon.backend.manager;
 
-import amazon.backend.service.PackagePackedService;
-import amazon.backend.service.ProductArrivedService;
+import amazon.backend.service.*;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import protobuf.AmazonUps;
 import protobuf.FrontBack;
-import amazon.backend.service.DealWebOrderService;
 import org.hibernate.SessionFactory;
 import protobuf.WorldAmazon;
 
@@ -20,11 +19,15 @@ public class LogisticsManager {
     ThreadPoolExecutor orderConfirmedPool;
     ThreadPoolExecutor productArrivedPool;
     ThreadPoolExecutor packagePackedPool;
+    ThreadPoolExecutor truckReadyPool;
+    ThreadPoolExecutor packageLoadedPool;
 
     private LogisticsManager() {
         orderConfirmedPool = (ThreadPoolExecutor) Executors.newFixedThreadPool(50);
         productArrivedPool = (ThreadPoolExecutor) Executors.newFixedThreadPool(50);
         packagePackedPool = (ThreadPoolExecutor) Executors.newFixedThreadPool(50);
+        truckReadyPool = (ThreadPoolExecutor) Executors.newFixedThreadPool(50);
+        packageLoadedPool = (ThreadPoolExecutor) Executors.newFixedThreadPool(50);
         logger.info("Logistics manager instance constructed");
     }
 
@@ -59,5 +62,15 @@ public class LogisticsManager {
     public synchronized void packagePacked(WorldAmazon.APacked aPacked) {
         logger.info("Logistics manager get APacked: " + aPacked.getSeqnum());
         packagePackedPool.execute(new PackagePackedService(aPacked));
+    }
+
+    public synchronized void truckReady(AmazonUps.UAReadyForPickup uaReadyForPickup) {
+        logger.info("Logistics manager get UAReadyForPickup: " + uaReadyForPickup.getSeqnum());
+        truckReadyPool.execute(new TruckReadyService(uaReadyForPickup));
+    }
+
+    public synchronized void packageLoaded(WorldAmazon.ALoaded aLoaded) {
+        logger.info("Logistics manager get ALoaded: " + aLoaded.getSeqnum());
+        packageLoadedPool.execute(new PackageLoadedService(aLoaded));
     }
 }
