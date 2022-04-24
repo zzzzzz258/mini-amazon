@@ -42,14 +42,6 @@ public class WorldIO {
      */
     private final List<int[]> warehousePos = List.of(new int[] {1,1});
 
-    public InputStream getInputStream() throws IOException {
-        return inputStream;
-    }
-
-    public OutputStream getOutputStream() throws IOException {
-        return outputStream;
-    }
-
     public boolean isBufferEmpty() {
         return isBufferEmpty;
     }
@@ -254,61 +246,6 @@ c     * @param worldId
         } catch (InterruptedException e) {
             logger.error("InterruptedException in sendBufferToWorld:\n" + e.getStackTrace());
         }
-    }
-
-    /**
-     * Create an ACommands for aPurchaseMores only.
-     * @param qPurchaseMores
-     * @param simspeed
-     * @return
-     */
-    private WorldAmazon.ACommands createACommands(List<WorldAmazon.APurchaseMore> qPurchaseMores,
-                                                  Integer simspeed) {
-      simspeed = 1000;
-      return createACommands(qPurchaseMores, null, null, null, simspeed, null, null);
-    }
-
-    /**
-     * Create ACommands to send
-     * @param aPurchaseMores
-     * @param aPacks
-     * @param aPutOnTrucks
-     * @param aQuerys
-     * @param simspeed
-     * @param disconnect
-     * @param acks
-     * @return
-     */
-    private WorldAmazon.ACommands createACommands(List<WorldAmazon.APurchaseMore> aPurchaseMores,
-                                                  List<WorldAmazon.APack> aPacks,
-                                                  List<WorldAmazon.APutOnTruck> aPutOnTrucks,
-                                                  List<WorldAmazon.AQuery> aQuerys,
-                                                  Integer simspeed,
-                                                  Boolean disconnect,
-                                                  List<Long> acks) {
-        WorldAmazon.ACommands.Builder builder = WorldAmazon.ACommands.newBuilder();
-        if (aPurchaseMores != null) {
-            aPurchaseMores.stream().forEach(ap -> builder.addBuy(ap));
-        }
-        if (aPacks != null) {
-            aPacks.stream().forEach(ap -> builder.addTopack(ap));
-        }
-        if (aPutOnTrucks != null) {
-            aPutOnTrucks.stream().forEach(ap -> builder.addLoad(ap));
-        }
-        if (aQuerys != null) {
-            aQuerys.stream().forEach(aq -> builder.addQueries(aq));
-        }
-        if (simspeed != null) {
-            builder.setSimspeed(simspeed);
-        }
-        if (disconnect != null) {
-            builder.setDisconnect(disconnect);
-        }
-        if (acks != null) {
-            acks.stream().forEach(ack -> builder.addAcks(ack));
-        }
-        return builder.build();
     }
 
     /**
