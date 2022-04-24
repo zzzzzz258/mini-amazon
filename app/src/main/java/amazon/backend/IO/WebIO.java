@@ -35,11 +35,11 @@ public class WebIO {
     private WebIO(int port) throws IOException {
         ServerSocket serverSocket = new ServerSocket(port);
         socket = serverSocket.accept();
-        logger.info("Web service connected, port: " + socket.getPort());
-        socket.setSoTimeout(30);
+        logger.info("Web service connected, port: " + socket.getPort());        
         outputStream = socket.getOutputStream();
         inputStream = socket.getInputStream();
         queue = new LinkedList<>();
+        socket.setSoTimeout(100);
     }
 
     public static synchronized WebIO getInstance() throws IllegalStateException {

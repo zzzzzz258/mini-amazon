@@ -52,12 +52,13 @@ public class WebListener implements Runnable {
         }
         catch (SocketTimeoutException e) {
           webIO.popQueueToWeb();
+          //logger.warn("Socket time out");
         }
         catch (IOException e) {
-          e.printStackTrace();
+          logger.error(e.getStackTrace());
         }
         catch (Exception e) {
-          e.printStackTrace();
+          logger.error(e.getStackTrace());
         }
       }
     }

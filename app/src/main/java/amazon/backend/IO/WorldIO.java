@@ -63,6 +63,7 @@ public class WorldIO {
 
     private WorldIO(String ip, int port, long worldId) throws IOException {
         socket = new Socket(ip, port);
+        logger.info("World connected in port: " + socket.getPort());
         outputStream = socket.getOutputStream();
         inputStream = socket.getInputStream();
         connectToWorld(worldId);
