@@ -60,6 +60,7 @@ public class PackagePackedService implements Runnable {
               .build();
       builder.addThings(aProduct);
     });
+    builder.setSeqnum(pkg.getPackSeq());
     return builder.build();
   }
 }
