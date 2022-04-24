@@ -21,7 +21,7 @@ public class TruckReadyService implements Runnable{
 
   @Override
   public void run() {
-    // send useles ack back
+    // send useles ack back if needed
     UpsIO upsIO = UpsIO.getInstance();
     upsIO.sendAck(uaReadyForPickup.getSeqnum());
 

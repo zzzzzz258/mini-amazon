@@ -172,12 +172,12 @@ public class UpsIO {
       if (bufferLock.tryLock(1, TimeUnit.SECONDS)) {
         try {
           AmazonUps.AUCommand auCommand = bufferBuilder.build();
-          logger.info("Send AUCommand to world:\n" + auCommand);
+          logger.info("Send AUCommand to ups:\n" + auCommand);
           sendToUps(auCommand.toByteArray());
           bufferBuilder.clear();
           bufferEmpty();
         } catch (Exception e) {
-          logger.error("Unexpected exception in sendBufferToWorld:\n"+e.getStackTrace());
+          logger.error("Unexpected exception in sendBufferToUps:\n"+e.getStackTrace());
         } finally {
           bufferLock.unlock();
         }
@@ -185,7 +185,7 @@ public class UpsIO {
         logger.warn("Send buffer to world fails due to lock");
       }
     } catch (InterruptedException e) {
-      logger.error("InterruptedException in sendBufferToWorld:\n" + e.getStackTrace());
+      logger.error("InterruptedException in sendBufferToUps:\n" + e.getStackTrace());
     }
   }
 

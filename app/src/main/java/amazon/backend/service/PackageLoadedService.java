@@ -31,7 +31,7 @@ public class PackageLoadedService implements Runnable{
 
     // send zz new status
     WebIO webIO = WebIO.getInstance();
-    webIO.sendStatus(pkg.getOrderId(), "Shipment");
+    webIO.sendStatus(pkg.getOrderId(), "Shipping");
 
     // check if all loaded, if so send ups to go
     if (packageDao.checkPackageLoaded(pkg.getTruckId())) {

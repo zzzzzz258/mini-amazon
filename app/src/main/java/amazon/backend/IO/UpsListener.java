@@ -30,7 +30,7 @@ public class UpsListener implements Runnable {
   }
 
   public static synchronized UpsListener newInstance(UpsIO upsIO, LogisticsManager logisticsManager) {
-    INSTANCE = newInstance(upsIO, logisticsManager);
+    INSTANCE = new UpsListener(upsIO, logisticsManager);
     return INSTANCE;
   }
 
@@ -64,7 +64,7 @@ public class UpsListener implements Runnable {
 
   @Override
   public void run() {
-    logger.info("WorldListener starts running");
+    logger.info("UpsListener starts running");
     while (true) {
       try {
         receive();

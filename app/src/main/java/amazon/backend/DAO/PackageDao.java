@@ -221,7 +221,7 @@ public class PackageDao {
         Transaction transaction = session.beginTransaction();
 
         String sql = "select * from package where truck_id = ? and is_loaded is not true";
-        List<Product> results = session.createNativeQuery(sql, Product.class).setParameter(1, truckId).list();
+        List<Package> results = session.createNativeQuery(sql, Package.class).setParameter(1, truckId).list();
 
         session.close();
 

@@ -33,6 +33,7 @@ public class App {
         WorldListener.newInstance(WorldIO.getInstance()
                 , AckManager.getInstance()
                 , LogisticsManager.getInstance());
+        UpsListener.newInstance(upsIO, LogisticsManager.getInstance());
     }
 
     public void start() throws IOException {

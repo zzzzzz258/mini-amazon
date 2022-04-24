@@ -46,12 +46,13 @@ public class PackagePackedService implements Runnable {
     Package pkg = packageDao.getOne(aPacked.getShipid());
     WorldAmazon.APack aPack = createAPack(pkg, productDao.getPackageProducts(pkg.getPackageId()));
     upsIO.sendAURequestPickUp(aPack, pkg.getUpsAccountName(), pkg.getX(), pkg.getY());
+    
 
   }
 
   public WorldAmazon.APack createAPack(Package pkg, List<Product> productList) {
     WorldAmazon.APack.Builder builder = WorldAmazon.APack.newBuilder();
-    builder.setWhnum(pkg.getWarehouseId()).setShipid(pkg.getPackageId()).setWhnum(250);
+    builder.setWhnum(pkg.getWarehouseId()).setShipid(pkg.getPackageId()).setSeqnum(250);
     productList.parallelStream().forEach(product -> {
       WorldAmazon.AProduct aProduct = WorldAmazon.AProduct.newBuilder()
               .setId(product.getProductId())
@@ -60,7 +61,6 @@ public class PackagePackedService implements Runnable {
               .build();
       builder.addThings(aProduct);
     });
-    builder.setSeqnum(pkg.getPackSeq());
     return builder.build();
   }
 }
