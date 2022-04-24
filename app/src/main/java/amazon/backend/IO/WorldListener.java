@@ -46,7 +46,9 @@ public class WorldListener implements Runnable{
         dispatchPurchased(responses.getArrivedList());
         dispathAcks(responses.getAcksList());
         dispatchPacked(responses.getReadyList());
-        // TODO: dispatch others
+        dispatchLoaded(responses.getLoadedList());
+        printErrors(responses.getErrorList());
+        // TODO: dispatch status
     }
 
     private void dispatchPurchased(List<WorldAmazon.APurchaseMore> aPurchaseMoreList) {
@@ -61,6 +63,14 @@ public class WorldListener implements Runnable{
             logger.info("Receive: \n" + aPacked);
             logisticsManager.packagePacked(aPacked);
         }
+    }
+
+    private void dispatchLoaded(List<WorldAmazon.ALoaded> aLoadeds) {
+        aLoadeds.stream().forEach(aLoaded -> logisticsManager.packageLoaded(aLoaded));
+    }
+
+    private void printErrors(List<WorldAmazon.AErr> errors) {
+        errors.stream().forEach(error -> logger.error("Error from world:\n" + error));
     }
 
     private void dispathAcks(List<Long> acks) {

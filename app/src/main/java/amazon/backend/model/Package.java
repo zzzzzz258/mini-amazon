@@ -24,6 +24,8 @@ public class Package {
     private Long packSeq;
     @Column(name="is_packed")
     private boolean isPacked;
+    @Column(name = "truck_id")
+    private Integer truckId;
     @Column(name = "load_seq")
     private Long loadSeq;
     @Column(name = "is_loaded")
@@ -121,6 +123,14 @@ public class Package {
 
     public void setLoadSeq(Long loadSeq) {
         this.loadSeq = loadSeq;
+    }
+
+    public Integer getTruckId() {
+        return truckId;
+    }
+
+    public void setTruckId(Integer truckId) {
+        this.truckId = truckId;
     }
 
     public boolean isIdLoaded() {

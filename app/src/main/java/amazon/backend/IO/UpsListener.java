@@ -47,7 +47,7 @@ public class UpsListener implements Runnable {
 
   private void dispatchUAReadyForPickup(List<UAReadyForPickup> readyForPickupList) {
     readyForPickupList.stream().forEach(uaReadyForPickup -> {
-      // TODO
+      logisticsManager.truckReady(uaReadyForPickup);
     });
   }
 

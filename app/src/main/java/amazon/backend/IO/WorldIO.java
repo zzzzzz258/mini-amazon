@@ -225,6 +225,33 @@ c     * @param worldId
         return tSeqNum;
     }
 
+    public long sendAPutOnTruck(int warehouseId, int truckId, long packageId) {
+        WorldAmazon.APutOnTruck.Builder builder = WorldAmazon.APutOnTruck.newBuilder()
+                        .setWhnum(warehouseId).setTruckid(truckId).setShipid(packageId);
+        long tSeqNum = getSeqNum();
+        builder.setSeqnum(tSeqNum);
+
+        try {
+            if (bufferLock.tryLock(10, TimeUnit.SECONDS)) {
+                try {
+                    bufferBuilder.addLoad(builder.build());
+                    logger.info("Add new APutToTruck to BufferBuilder:\n" + builder.build());
+                    bufferNotEmpty();
+                }
+                finally {
+                    bufferLock.unlock();
+                }
+            }
+            else {
+                logger.fatal("Bad design");
+            }
+        } catch (InterruptedException e) {
+            logger.error("InterruptedException in sendAPutOnTruck:\n" + e.getStackTrace());
+        }
+
+        return tSeqNum;
+    }
+
     /**
      * Method to add ack to buffer
      * @param num

@@ -21,6 +21,7 @@ create table package (
   ups_account_name  text,
   pack_seq      bigint default null references world_message(sequence_num) on delete set null,
   is_packed      boolean default false ,
+  truck_id      int,
   load_seq      bigint default null references world_message(sequence_num) on delete set null ,
   is_loaded      boolean default false
 );

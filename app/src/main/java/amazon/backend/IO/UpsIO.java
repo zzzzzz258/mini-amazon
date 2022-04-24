@@ -116,6 +116,29 @@ public class UpsIO {
     }
   }
 
+  public void sendAUReadyForDelivery(int truckId) {
+    AmazonUps.AUReadyForDelivery.Builder builder = AmazonUps.AUReadyForDelivery.newBuilder();
+    AmazonUps.AUReadyForDelivery auReadyForDelivery = builder.setTruckid(truckId).setSeqnum(getSeqNum()).build();
+
+    try {
+      if (bufferLock.tryLock(10, TimeUnit.SECONDS)) {
+        try {
+          bufferBuilder.addDeliveryReady(auReadyForDelivery);
+          logger.info("Add new AUDeliveryReady to BufferBuilder:\n" + auReadyForDelivery);
+          bufferNotEmpty();
+        }
+        finally {
+          bufferLock.unlock();
+        }
+      }
+      else {
+        logger.fatal("Bad design");
+      }
+    } catch (InterruptedException e) {
+      logger.error("InterruptedException in sendAUDeliveryReady:\n" + e.getStackTrace());
+    }
+  }
+
   public void sendAck(long num) {
     try {
       if (bufferLock.tryLock(10, TimeUnit.SECONDS)) {
