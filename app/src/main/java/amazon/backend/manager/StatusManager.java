@@ -1,5 +1,7 @@
 package amazon.backend.manager;
 
+import amazon.backend.service.PackageDeliveredService;
+import amazon.backend.service.UpdateIsMatchedService;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import protobuf.AmazonUps;
@@ -33,7 +35,7 @@ public class StatusManager {
 
   public synchronized void packageDelivered(AmazonUps.UAPackageDelivered packageDelivered) {
     logger.info("Status manager gets packageDelivered: " + packageDelivered.getPackageid());
-    // TODO
+    packageDeliveredPool.execute(new PackageDeliveredService(packageDelivered));
   }
 
   public synchronized void updateTrackingNum() {
@@ -43,7 +45,7 @@ public class StatusManager {
 
   public synchronized void updateIsMatched(AmazonUps.UAIsAssociated uaIsAssociated) {
     logger.info("Status manager gets UAIsAssociated: \n" + uaIsAssociated);
-    // TODO
+    updateIsMatchedPool.execute(new UpdateIsMatchedService(uaIsAssociated));
   }
 
 }
