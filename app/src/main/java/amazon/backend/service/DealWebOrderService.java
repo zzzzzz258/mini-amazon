@@ -42,7 +42,11 @@ public class DealWebOrderService implements Runnable {
       WorldMessageDao worldMessageDao = new WorldMessageDao();
       WorldIO worldIO = WorldIO.getInstance();
 
-      Package pkg = new Package(worldIO.warehouseIds.get(0), order.getPid(), order.getX(), order.getY());
+      Package pkg = new Package(worldIO.warehouseIds.get(0)
+              , order.getPid()
+              , order.getX()
+              , order.getY()
+              , order.getUpsAccountName());
       long packageId = packageDao.addOne(pkg);
       FrontBack.Product frontProdcut = order.getProducts();
       if (frontProdcut == null) {

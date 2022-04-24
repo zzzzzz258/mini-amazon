@@ -18,6 +18,7 @@ create table package (
   order_id      int not null ,
   x             int not null,
   y             int not null,
+  ups_account_name  text,
   pack_seq      bigint default null references world_message(sequence_num) on delete set null,
   is_packed      boolean default false ,
   load_seq      bigint default null references world_message(sequence_num) on delete set null ,

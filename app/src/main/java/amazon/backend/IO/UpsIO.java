@@ -89,6 +89,33 @@ public class UpsIO {
     return AmazonUps.AUConnected.newBuilder().setSeqnum(getSeqNum()).setWorldConnectionStatus(true).build();
   }
 
+  public void sendAURequestPickUp(WorldAmazon.APack aPack, String upsAccount, int x, int y) {
+    AmazonUps.AUPack.Builder auPackBuilder = AmazonUps.AUPack.newBuilder().setDestx(x).setDesty(y).setPackage(aPack);
+    if (upsAccount != null) {
+      auPackBuilder.setUpsAccount(upsAccount);
+    }
+    AmazonUps.AURequestPickup auRequestPickup = AmazonUps.AURequestPickup.newBuilder().setPack(auPackBuilder.build())
+            .setSeqnum(getSeqNum()).build();
+
+    try {
+      if (bufferLock.tryLock(10, TimeUnit.SECONDS)) {
+        try {
+          bufferBuilder.addPickupRequest(auRequestPickup);
+          logger.info("Add new AURequestPickUp to BufferBuilder:\n" + auRequestPickup);
+          bufferNotEmpty();
+        }
+        finally {
+          bufferLock.unlock();
+        }
+      }
+      else {
+        logger.fatal("Bad design");
+      }
+    } catch (InterruptedException e) {
+      logger.error("InterruptedException in sendAURequestPickUp:\n" + e.getStackTrace());
+    }
+  }
+
   public void sendAck(long num) {
     try {
       if (bufferLock.tryLock(10, TimeUnit.SECONDS)) {

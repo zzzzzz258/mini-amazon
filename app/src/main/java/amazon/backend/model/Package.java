@@ -18,6 +18,8 @@ public class Package {
     private int orderId;
     private int x;
     private int y;
+    @Column(name = "ups_account_name")
+    private String upsAccountName;
     @Column(name = "pack_seq")
     private Long packSeq;
     @Column(name="is_packed")
@@ -35,6 +37,14 @@ public class Package {
         this.orderId = orderId;
         this.x = x;
         this.y = y;
+    }
+
+    public Package(int warehouseId, int orderId, int x, int y, String upsAccountName) {
+        this.warehouseId = warehouseId;
+        this.orderId = orderId;
+        this.x = x;
+        this.y = y;
+        this.upsAccountName = upsAccountName;
     }
 
     public Package(Long packageId) {
@@ -79,6 +89,14 @@ public class Package {
 
     public void setY(int y) {
         this.y = y;
+    }
+
+    public String getUpsAccountName() {
+        return upsAccountName;
+    }
+
+    public void setUpsAccountName(String upsAccountName) {
+        this.upsAccountName = upsAccountName;
     }
 
     public Long getPackSeq() {

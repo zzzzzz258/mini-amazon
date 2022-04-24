@@ -52,7 +52,6 @@ public class PackageDao {
 
         Package p = session.get(Package.class, id);
 
-        transaction.commit();
         session.close();
 
         return p;
