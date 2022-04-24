@@ -227,4 +227,38 @@ public class PackageDao {
 
         return results.isEmpty();
     }
+
+    public Package getOneByPackSeq(long seqNum) {
+        Session session = factory.openSession();
+        Transaction transaction = session.beginTransaction();
+
+        String sql = "select * from package where pack_seq = ?";
+        try {
+            Package result = session.createNativeQuery(sql, Package.class).setParameter(1, seqNum).getSingleResult();
+            return result;
+        } catch (Exception e) {
+            logger.info("Fail to get a package by its pack seqNum: " + seqNum);
+        } finally {
+            session.close();
+        }
+
+        return null;
+    }
+
+    public Package getOneByLoadSeq(long seqNum) {
+        Session session = factory.openSession();
+        Transaction transaction = session.beginTransaction();
+
+        String sql = "select * from package where load_seq = ?";
+        try {
+            Package result = session.createNativeQuery(sql, Package.class).setParameter(1, seqNum).getSingleResult();
+            return result;
+        } catch (Exception e) {
+            logger.info("Fail to get a package by its load seqNum: " + seqNum);
+        } finally {
+            session.close();
+        }
+
+        return null;
+    }
 }

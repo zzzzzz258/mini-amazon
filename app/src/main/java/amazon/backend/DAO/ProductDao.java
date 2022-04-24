@@ -1,6 +1,7 @@
 package amazon.backend.DAO;
 
 import amazon.backend.SingletonSessionFactory;
+import amazon.backend.model.Package;
 import amazon.backend.model.Product;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -127,5 +128,22 @@ public class ProductDao {
         session.close();
 
         return results;
+    }
+
+    public List<Product> getListByBuySeq(long seqNum) {
+        Session session = factory.openSession();
+        Transaction transaction = session.beginTransaction();
+
+        String sql = "select * from product where buy_seq = ?";
+        try {
+            List<Product> results = session.createNativeQuery(sql, Product.class).setParameter(1, seqNum).list();
+            return results;
+        } catch (Exception e) {
+            logger.info("Fail to get a products by its buy seqNum: " + seqNum);
+        } finally {
+            session.close();
+        }
+
+        return null;
     }
 }

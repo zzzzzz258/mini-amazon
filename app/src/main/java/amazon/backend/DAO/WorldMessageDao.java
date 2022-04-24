@@ -1,6 +1,7 @@
 package amazon.backend.DAO;
 
 import amazon.backend.SingletonSessionFactory;
+import amazon.backend.model.Product;
 import amazon.backend.model.WorldMessage;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -9,6 +10,8 @@ import org.hibernate.Session;
 import org.hibernate.SessionFactory;
 import org.hibernate.Transaction;
 import org.postgresql.util.PSQLException;
+
+import java.util.List;
 
 public class WorldMessageDao {
 
@@ -109,10 +112,42 @@ public class WorldMessageDao {
         }
     }
 
-  public void clear() {
-    Session session = factory.openSession();
-    session.createQuery("delete from world_message").executeUpdate();
-    
-    session.close();
-  }
+    public void setSentTime(long seqNum, long newTime) {
+        while (true) {
+            Session session = factory.openSession();
+            Transaction transaction = null;
+            try {
+                transaction = session.beginTransaction();
+
+                WorldMessage worldMessage = session.get(WorldMessage.class, seqNum);
+                worldMessage.setSentTime(newTime);
+                session.merge(worldMessage);
+
+                transaction.commit();
+                logger.info("Resent " + seqNum + " successful at " + newTime);
+                session.close();
+                return;
+            } catch (NullPointerException e) {
+                logger.error("Resent " + seqNum + " fails, record doesn't exists");
+                transaction.rollback();
+            } catch (Exception e) {
+                logger.warn(e.getMessage());
+            } finally {
+                session.close();
+            }
+        }
+    }
+
+    public List<WorldMessage> getUnackedList(long time) {
+        Session session = factory.openSession();
+        Transaction transaction = session.beginTransaction();
+
+        String sql = "select * from world_message where acked is not true and sent_time < ?";
+        List<WorldMessage> results = session.createNativeQuery(sql, WorldMessage.class)
+                .setParameter(1, time).list();
+
+        session.close();
+
+        return results;
+    }
 }

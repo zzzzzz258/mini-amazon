@@ -148,16 +148,21 @@ c     * @param worldId
         return aInitWarehouse;
     }
 
+    public long sendAPurchaseMore(int warehouseId, List<Product> products) throws IOException {
+        long tSeqNum = getSeqNum();
+        sendAPurchaseMore(warehouseId, products, tSeqNum);
+        return tSeqNum;
+    }
+
     /**
      * Method to send APurchaseMore to world
      * @param warehouseId
      * @param products
      */
-    public long sendAPurchaseMore(int warehouseId, List<Product> products) throws IOException {
+    public void sendAPurchaseMore(int warehouseId, List<Product> products, long seqNum) {
         WorldAmazon.APurchaseMore.Builder builder = WorldAmazon.APurchaseMore.newBuilder().setWhnum(warehouseId);
         products.stream().forEach(p -> builder.addThings(createAProduct(p)));
-        long tSeqNum = getSeqNum();
-        builder.setSeqnum(tSeqNum);
+        builder.setSeqnum(seqNum);
 
         try {
             if (bufferLock.tryLock(10, TimeUnit.SECONDS)) {
@@ -176,8 +181,6 @@ c     * @param worldId
         } catch (InterruptedException e) {
             logger.error("InterruptedException in sendAPurchaseMore:\n" + e.getStackTrace());
         }
-
-        return tSeqNum;
     }
 
     /**
@@ -194,6 +197,13 @@ c     * @param worldId
     }
 
     public long sendAPack(int warehouseNum, List<Product> things, long shipId) {
+        long tSeqNum = getSeqNum();
+        sendAPack(warehouseNum, things, shipId, tSeqNum);
+
+        return tSeqNum;
+    }
+
+    public void sendAPack(int warehouseNum, List<Product> things, long shipId, long seqNum) {
         WorldAmazon.APack.Builder builder = WorldAmazon.APack.newBuilder().setWhnum(warehouseNum).setShipid(shipId);
         things.stream().forEach(product -> {
             builder.addThings(WorldAmazon.AProduct.newBuilder()
@@ -201,8 +211,7 @@ c     * @param worldId
                     .setDescription(product.getDescription())
                     .setCount(product.getCount()));
         });
-        long tSeqNum = getSeqNum();
-        builder.setSeqnum(tSeqNum);
+        builder.setSeqnum(seqNum);
 
         try {
             if (bufferLock.tryLock(10, TimeUnit.SECONDS)) {
@@ -221,15 +230,19 @@ c     * @param worldId
         } catch (InterruptedException e) {
             logger.error("InterruptedException in sendAPack:\n" + e.getStackTrace());
         }
+    }
+
+    public long sendAPutOnTruck(int warehouseId, int truckId, long packageId) {
+        long tSeqNum = getSeqNum();
+        sendAPutOnTruck(warehouseId, truckId, packageId, tSeqNum);
 
         return tSeqNum;
     }
 
-    public long sendAPutOnTruck(int warehouseId, int truckId, long packageId) {
+    public void sendAPutOnTruck(int warehouseId, int truckId, long packageId, long seqNum) {
         WorldAmazon.APutOnTruck.Builder builder = WorldAmazon.APutOnTruck.newBuilder()
                         .setWhnum(warehouseId).setTruckid(truckId).setShipid(packageId);
-        long tSeqNum = getSeqNum();
-        builder.setSeqnum(tSeqNum);
+        builder.setSeqnum(seqNum);
 
         try {
             if (bufferLock.tryLock(10, TimeUnit.SECONDS)) {
@@ -248,8 +261,6 @@ c     * @param worldId
         } catch (InterruptedException e) {
             logger.error("InterruptedException in sendAPutOnTruck:\n" + e.getStackTrace());
         }
-
-        return tSeqNum;
     }
 
     /**
