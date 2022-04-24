@@ -1,6 +1,7 @@
 package amazon.backend.IO;
 
 import amazon.backend.manager.LogisticsManager;
+import amazon.backend.manager.StatusManager;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import protobuf.AmazonUps;
@@ -18,6 +19,7 @@ public class UpsListener implements Runnable {
 
   UpsIO upsIO;
   LogisticsManager logisticsManager;
+  StatusManager statusManager;
 
   private UpsListener(UpsIO upsIO, LogisticsManager logisticsManager) {
     this.upsIO = upsIO;
@@ -53,9 +55,8 @@ public class UpsListener implements Runnable {
 
   private void dispatchUAPackageDelivered(List<UAPackageDelivered> uaPackageDeliveredList) {
     uaPackageDeliveredList.stream().forEach(uaPackageDelivered -> {
-
+      statusManager.packageDelivered(uaPackageDelivered);
     });
-    // TODO
   }
 
   private void printErrors(List<Err> errs) {

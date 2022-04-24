@@ -6,6 +6,7 @@ package amazon.backend;
 import amazon.backend.IO.*;
 import amazon.backend.manager.AckManager;
 import amazon.backend.manager.LogisticsManager;
+import amazon.backend.manager.StatusManager;
 import org.hibernate.SessionFactory;
 
 import java.io.IOException;
@@ -29,6 +30,7 @@ public class App {
         WebIO.newInstance(myWebPort);
         AckManager.newInstance(sessionFactory);
         LogisticsManager.newInstance();
+        StatusManager.newInstance();
         WebListener.newInstance(WebIO.getInstance(), LogisticsManager.getInstance());
         WorldListener.newInstance(WorldIO.getInstance()
                 , AckManager.getInstance()
