@@ -22,10 +22,10 @@ public class TruckReadyService implements Runnable{
   public void run() {
     // send useles ack back if needed
     UpsIO upsIO = UpsIO.getInstance();
-    upsIO.sendAck(uaReadyForPickup.getSeqnum());
-
     WorldMessageDao worldMessageDao = new WorldMessageDao();
+
     if (!worldMessageDao.ifSeqExists(uaReadyForPickup.getSeqnum())) {
+      upsIO.sendAck(uaReadyForPickup.getSeqnum());
 
       // tell world to load to the truck, update truck id on database
       PackageDao packageDao = new PackageDao();
