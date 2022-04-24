@@ -156,7 +156,8 @@ public class WorldMessageDao {
         Transaction transaction = session.beginTransaction();
 
         String sql = "select * from world_message where sequence_num = ?";
-        List<WorldMessage> results = session.createNativeQuery(sql, WorldMessage.class).setParameter(1, seqNum).list();
+        List<WorldMessage> results = session.createNativeQuery(sql, WorldMessage.class)
+                .setParameter(1, seqNum).list();
 
         session.close();
 

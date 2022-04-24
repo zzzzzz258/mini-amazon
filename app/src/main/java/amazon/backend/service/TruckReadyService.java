@@ -9,10 +9,15 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import protobuf.AmazonUps;
 
+import java.util.HashSet;
+import java.util.Set;
+
 public class TruckReadyService implements Runnable{
   Logger logger = LogManager.getLogger();
 
   private AmazonUps.UAReadyForPickup uaReadyForPickup;
+
+  Set<Long> upsAcks = new HashSet<>();
 
   public TruckReadyService(AmazonUps.UAReadyForPickup uaReadyForPickup) {
     this.uaReadyForPickup = uaReadyForPickup;
@@ -24,8 +29,9 @@ public class TruckReadyService implements Runnable{
     UpsIO upsIO = UpsIO.getInstance();
     WorldMessageDao worldMessageDao = new WorldMessageDao();
 
-    if (!worldMessageDao.ifSeqExists(uaReadyForPickup.getSeqnum())) {
+    if (!upsAcks.contains(uaReadyForPickup.getSeqnum())) {
       upsIO.sendAck(uaReadyForPickup.getSeqnum());
+      upsAcks.add(uaReadyForPickup.getSeqnum());
 
       // tell world to load to the truck, update truck id on database
       PackageDao packageDao = new PackageDao();
