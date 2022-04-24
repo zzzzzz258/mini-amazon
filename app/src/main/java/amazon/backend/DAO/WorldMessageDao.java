@@ -108,4 +108,11 @@ public class WorldMessageDao {
             }
         }
     }
+
+  public void clear() {
+    Session session = factory.openSession();
+    session.createQuery("delete from world_message").executeUpdate();
+    
+    session.close();
+  }
 }

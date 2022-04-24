@@ -40,8 +40,9 @@ public class DealWebOrderService implements Runnable {
       PackageDao packageDao = new PackageDao();
       ProductDao productDao = new ProductDao();
       WorldMessageDao worldMessageDao = new WorldMessageDao();
+      WorldIO worldIO = WorldIO.getInstance();
 
-      Package pkg = new Package(1, order.getPid(), order.getX(), order.getY());
+      Package pkg = new Package(worldIO.warehouseIds.get(0), order.getPid(), order.getX(), order.getY());
       long packageId = packageDao.addOne(pkg);
       FrontBack.Product frontProdcut = order.getProducts();
       if (frontProdcut == null) {
@@ -58,11 +59,10 @@ public class DealWebOrderService implements Runnable {
       webIO.sendStatus(pkg.getOrderId(), "Packing");
 
       // send purchase request to world
-      WorldIO worldIO = WorldIO.getInstance();
       try {
-          long seqNum = worldIO.sendAPurchaseMore(1, List.of(product));
-          productDao.setBuySeq(packageId, seqNum);
+        long seqNum = worldIO.sendAPurchaseMore(worldIO.warehouseIds.get(0), List.of(product));
           worldMessageDao.addOne(new WorldMessage(seqNum));
+          productDao.setBuySeq(packageId, seqNum);          
       } catch (IOException e) {
           e.printStackTrace();
       }

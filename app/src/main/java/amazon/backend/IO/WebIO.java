@@ -2,6 +2,8 @@ package amazon.backend.IO;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+
+import amazon.backend.DAO.WorldMessageDao;
 import protobuf.FrontBack;
 import com.google.protobuf.CodedInputStream;
 import com.google.protobuf.CodedOutputStream;
@@ -135,6 +137,7 @@ public class WebIO {
      * @throws IOException
      */
     public <T extends GeneratedMessageV3.Builder<?>> void receiveFromWeb(T responseBuilder) throws IOException {
+      //logger.info("try to receive from web");
         CodedInputStream cis = CodedInputStream.newInstance(inputStream);
         int size = cis.readRawVarint32();
         int oldLimit = cis.pushLimit(size);

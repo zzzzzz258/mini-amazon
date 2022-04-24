@@ -51,14 +51,18 @@ public class WebListener implements Runnable {
           receive();
         }
         catch (SocketTimeoutException e) {
+          //if (System.currentTimeMillis() % 5 == 0)
+          //webIO.sendStatus(1, "good");
           webIO.popQueueToWeb();
           //logger.warn("Socket time out");
         }
         catch (IOException e) {
-          logger.error(e.getStackTrace());
+          //e.getStackTrace();
+          e.printStackTrace();
         }
         catch (Exception e) {
-          logger.error(e.getStackTrace());
+          //          e.getStackTrace();
+          e.printStackTrace();
         }
       }
     }

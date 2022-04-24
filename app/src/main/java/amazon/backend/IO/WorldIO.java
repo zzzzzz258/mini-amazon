@@ -1,5 +1,6 @@
 package amazon.backend.IO;
 
+import amazon.backend.DAO.*;
 import amazon.backend.DAO.WarehouseDao;
 import amazon.backend.model.Package;
 import amazon.backend.model.Product;
@@ -71,6 +72,9 @@ public class WorldIO {
         bufferBuilder = WorldAmazon.ACommands.newBuilder();
         isBufferEmpty = true;
         logger.info("Construct new WorldIO: "+ip+":"+port+" in world "+worldId);
+
+        //WorldMessageDao worldMessageDao = new WorldMessageDao();
+        //worldMessageDao.clear();
     }
 
     public static synchronized WorldIO getInstance() {
@@ -121,7 +125,7 @@ public class WorldIO {
 
     /**
      * Helper method to create an AConnect message
-     * @param worldId
+c     * @param worldId
      * @param wareHouseList
      * @return
      */
@@ -260,7 +264,8 @@ public class WorldIO {
      */
     private WorldAmazon.ACommands createACommands(List<WorldAmazon.APurchaseMore> qPurchaseMores,
                                                   Integer simspeed) {
-        return createACommands(qPurchaseMores, null, null, null, simspeed, null, null);
+      simspeed = 1000;
+      return createACommands(qPurchaseMores, null, null, null, simspeed, null, null);
     }
 
     /**
