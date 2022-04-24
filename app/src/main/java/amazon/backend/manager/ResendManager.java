@@ -34,14 +34,21 @@ public class ResendManager implements Runnable{
 
   @Override
   public void run() {
-    long timeThreshold = System.currentTimeMillis() - 1000;
-    WorldMessageDao worldMessageDao = new WorldMessageDao();
+    while (true) {
+      try {
+        Thread.sleep(3000);
+      } catch (InterruptedException e) {
+        e.printStackTrace();
+      }
+      long timeThreshold = System.currentTimeMillis() - 1000;
+      WorldMessageDao worldMessageDao = new WorldMessageDao();
 
-    List<WorldMessage> worldMessageList = worldMessageDao.getUnackedList(timeThreshold);
-    for (WorldMessage worldMessage : worldMessageList) {
-      boolean flag = resendToWorld(worldMessage.getSequenceNum());
-      if (flag) {
-        worldMessageDao.setSentTime(worldMessage.getSequenceNum(), System.currentTimeMillis());
+      List<WorldMessage> worldMessageList = worldMessageDao.getUnackedList(timeThreshold);
+      for (WorldMessage worldMessage : worldMessageList) {
+        boolean flag = resendToWorld(worldMessage.getSequenceNum());
+        if (flag) {
+          worldMessageDao.setSentTime(worldMessage.getSequenceNum(), System.currentTimeMillis());
+        }
       }
     }
   }
@@ -54,7 +61,7 @@ public class ResendManager implements Runnable{
     Package pkgL = packageDao.getOneByLoadSeq(seq);
     List<Product> productList = productDao.getListByBuySeq(seq);
 
-    if (productList != null) {
+    if (productList != null && productList.size() > 0) {
       resendAPurchaseMore(productList, seq);
     }
     else if (pkgP != null) {
@@ -74,11 +81,15 @@ public class ResendManager implements Runnable{
     ProductDao productDao = new ProductDao();
     List<Product> products = productDao.getPackageProducts(pkg.getPackageId());
     WorldIO worldIO = WorldIO.getInstance();
+    logger.info("Resend APack to world: " + seq);
+    System.out.println("Resend APack to world: " + seq);
     worldIO.sendAPack(pkg.getWarehouseId(), products, pkg.getPackageId(), seq);
   }
 
   private void resendALoad(Package pkg, long seq) {
     WorldIO worldIO = WorldIO.getInstance();
+    logger.info("Resend ALoad to world: " + seq);
+    System.out.println("Resend Aload to world: " + seq);
     worldIO.sendAPutOnTruck(pkg.getWarehouseId(), pkg.getTruckId(), pkg.getPackageId(), seq);
   }
 
@@ -88,6 +99,8 @@ public class ResendManager implements Runnable{
     Package pkg = packageDao.getOne(packageId);
 
     WorldIO worldIO = WorldIO.getInstance();
+    logger.info("Resend APurchaseMore to world: " + seq);
+    System.out.println("Resend APurchaseMore to world: " + seq);
     worldIO.sendAPurchaseMore(pkg.getWarehouseId(), productList, seq);
   }
 

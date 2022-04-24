@@ -42,6 +42,8 @@ public class TruckReadyService implements Runnable{
         worldMessageDao.addOne(new WorldMessage(seqNum));
         packageDao.setLoadSeq(id, seqNum);
       });
+
+
     }
   }
 }

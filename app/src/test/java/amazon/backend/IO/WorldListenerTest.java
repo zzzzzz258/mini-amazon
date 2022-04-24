@@ -6,6 +6,7 @@ import amazon.backend.DAO.WorldMessageDao;
 import amazon.backend.SingletonSessionFactory;
 import amazon.backend.manager.AckManager;
 import amazon.backend.manager.LogisticsManager;
+import amazon.backend.manager.ResendManager;
 import amazon.backend.model.Package;
 import amazon.backend.model.Product;
 import amazon.backend.model.WorldMessage;
@@ -38,10 +39,13 @@ class WorldListenerTest {
 
 
     WorldIO worldIO = WorldIO.newInstance(ip, port, worldId);
+    ResendManager resendManager = ResendManager.newInstance();
+
+    new Thread(resendManager, "Resend Manager").start();
 
     WorldListener worldListener = new WorldListener(worldIO
             , AckManager.newInstance(SingletonSessionFactory.getSessionFactory())
-            , LogisticsManager.newInstance(SingletonSessionFactory.getSessionFactory()));
+            , LogisticsManager.newInstance());
     Thread thread = new Thread(worldListener);
     thread.setName("World Listener Thread");
     thread.start();

@@ -136,7 +136,8 @@ public class ProductDao {
 
         String sql = "select * from product where buy_seq = ?";
         try {
-            List<Product> results = session.createNativeQuery(sql, Product.class).setParameter(1, seqNum).list();
+            List<Product> results = session.createNativeQuery(sql, Product.class)
+                    .setParameter(1, seqNum).list();
             return results;
         } catch (Exception e) {
             logger.info("Fail to get a products by its buy seqNum: " + seqNum);
