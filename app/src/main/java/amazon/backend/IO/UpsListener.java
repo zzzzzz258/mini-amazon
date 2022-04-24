@@ -21,7 +21,7 @@ public class UpsListener implements Runnable {
   LogisticsManager logisticsManager;
   StatusManager statusManager;
 
-  private UpsListener(UpsIO upsIO, LogisticsManager logisticsManager) {
+  private UpsListener(UpsIO upsIO, LogisticsManager logisticsManager, StatusManager statusManager) {
     this.upsIO = upsIO;
     this.logisticsManager = logisticsManager;
     logger.info("Ups listener constructed");
@@ -31,8 +31,10 @@ public class UpsListener implements Runnable {
     return INSTANCE;
   }
 
-  public static synchronized UpsListener newInstance(UpsIO upsIO, LogisticsManager logisticsManager) {
-    INSTANCE = new UpsListener(upsIO, logisticsManager);
+  public static synchronized UpsListener newInstance(UpsIO upsIO
+          , LogisticsManager logisticsManager
+          , StatusManager statusManager) {
+    INSTANCE = new UpsListener(upsIO, logisticsManager, statusManager);
     return INSTANCE;
   }
 

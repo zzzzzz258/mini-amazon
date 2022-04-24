@@ -19,6 +19,8 @@ public class UpdateIsMatchedService implements Runnable {
   @Override
   public void run() {
     WebIO webIO = WebIO.getInstance();
+    UpsIO upsIO = UpsIO.getInstance();
+
     long packageId = isAssociated.getPackageid();
     PackageDao packageDao = new PackageDao();
 

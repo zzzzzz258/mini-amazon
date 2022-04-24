@@ -24,6 +24,8 @@ public class PackageDeliveredService implements Runnable{
   @Override
   public void run() {
     if (!upsAcks.contains(packageDelivered.getSeqnum())) {
+      upsAcks.add(packageDelivered.getSeqnum());
+
       long packageId = packageDelivered.getPackageid();
       // send shit back
       UpsIO upsIO = UpsIO.getInstance();
