@@ -3,6 +3,7 @@ package amazon.backend.service;
 import amazon.backend.DAO.PackageDao;
 import amazon.backend.DAO.WorldMessageDao;
 import amazon.backend.IO.UpsIO;
+import amazon.backend.IO.WebIO;
 import amazon.backend.IO.WorldIO;
 import amazon.backend.model.WorldMessage;
 import org.apache.logging.log4j.LogManager;
@@ -42,8 +43,6 @@ public class TruckReadyService implements Runnable{
         worldMessageDao.addOne(new WorldMessage(seqNum));
         packageDao.setLoadSeq(id, seqNum);
       });
-
-
     }
   }
 }

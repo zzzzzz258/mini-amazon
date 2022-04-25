@@ -37,17 +37,17 @@ public class PackagePackedService implements Runnable {
     // update databse, record packed
     packageDao.setPacked(aPacked.getShipid());
 
-    // send to zz ready for shipment
-    WebIO webIO = WebIO.getInstance();
-    webIO.sendStatus(packageDao.getOrderId(aPacked.getShipid()), "Ready for shipment");
-
-    // send to ups for pick our shit
+    // send to ups for pick our thing
     UpsIO upsIO = UpsIO.getInstance();
     Package pkg = packageDao.getOne(aPacked.getShipid());
     WorldAmazon.APack aPack = createAPack(pkg, productDao.getPackageProducts(pkg.getPackageId()));
     upsIO.sendAURequestPickUp(aPack, pkg.getUpsAccountName(), pkg.getX(), pkg.getY());
-    
 
+    // send to zz ready for shipment
+    WebIO webIO = WebIO.getInstance();
+    webIO.sendStatus(packageDao.getOrderId(aPacked.getShipid()), "Ready for shipment");
+    // tell web the trackingNum(packageNum)
+    webIO.sendTrackingNum(packageDao.getOrderId(pkg.getPackageId()), String.valueOf(pkg.getPackageId()));
   }
 
   public WorldAmazon.APack createAPack(Package pkg, List<Product> productList) {

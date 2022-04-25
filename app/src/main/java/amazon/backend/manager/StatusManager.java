@@ -38,10 +38,6 @@ public class StatusManager {
     packageDeliveredPool.execute(new PackageDeliveredService(packageDelivered));
   }
 
-  public synchronized void updateTrackingNum() {
-    //logger.info("Status manager gets packageDelivered: " + packageDelivered.getPackageid());
-    // TODO
-  }
 
   public synchronized void updateIsMatched(AmazonUps.UAIsAssociated uaIsAssociated) {
     logger.info("Status manager gets UAIsAssociated: \n" + uaIsAssociated);

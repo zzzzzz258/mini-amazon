@@ -24,6 +24,7 @@ public class UpsListener implements Runnable {
   private UpsListener(UpsIO upsIO, LogisticsManager logisticsManager, StatusManager statusManager) {
     this.upsIO = upsIO;
     this.logisticsManager = logisticsManager;
+    statusManager = StatusManager.getInstance();
     logger.info("Ups listener constructed");
   }
 
@@ -46,6 +47,7 @@ public class UpsListener implements Runnable {
     // dispatch
     dispatchUAReadyForPickup(uaCommand.getPickupReadyList());
     dispatchUAPackageDelivered(uaCommand.getPackageDeliveredList());
+    dispatchUAIsAssociated(uaCommand.getLinkResultList());
     printErrors(uaCommand.getErrorList());
   }
 
@@ -58,6 +60,12 @@ public class UpsListener implements Runnable {
   private void dispatchUAPackageDelivered(List<UAPackageDelivered> uaPackageDeliveredList) {
     uaPackageDeliveredList.stream().forEach(uaPackageDelivered -> {
       statusManager.packageDelivered(uaPackageDelivered);
+    });
+  }
+
+  private void dispatchUAIsAssociated(List<UAIsAssociated> uaIsAssociateds) {
+    uaIsAssociateds.stream().forEach(uaPackageDelivered -> {
+      statusManager.updateIsMatched(uaPackageDelivered);
     });
   }
 
