@@ -24,7 +24,7 @@ public class UpsListener implements Runnable {
   private UpsListener(UpsIO upsIO, LogisticsManager logisticsManager, StatusManager statusManager) {
     this.upsIO = upsIO;
     this.logisticsManager = logisticsManager;
-    statusManager = StatusManager.getInstance();
+    this.statusManager = StatusManager.getInstance();
     logger.info("Ups listener constructed");
   }
 
