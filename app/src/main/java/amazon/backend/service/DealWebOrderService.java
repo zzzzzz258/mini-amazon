@@ -73,6 +73,7 @@ public class DealWebOrderService implements Runnable {
     }
 
     public int getWarehouseId(long productId) {
-      return (int) (productId % WorldIO.getInstance().warehouseIds.size());
+      int index = (int) (productId % WorldIO.getInstance().warehouseIds.size());
+      return WorldIO.getInstance().warehouseIds.get(index);
     }
 }
