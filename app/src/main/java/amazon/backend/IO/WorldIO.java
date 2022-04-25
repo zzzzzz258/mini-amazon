@@ -41,7 +41,10 @@ public class WorldIO {
     /**
      * The warehosue positions to initialize
      */
-    private final List<int[]> warehousePos = List.of(new int[] {1,1});
+    private final List<int[]> warehousePos = List.of(
+            new int[] {1,1}
+            , new int[] {100, 100}
+            , new int[] {1000, 1000});
 
     public boolean isBufferEmpty() {
         return isBufferEmpty;

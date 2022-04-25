@@ -42,7 +42,7 @@ public class DealWebOrderService implements Runnable {
       WorldMessageDao worldMessageDao = new WorldMessageDao();
       WorldIO worldIO = WorldIO.getInstance();
 
-      Package pkg = new Package(worldIO.warehouseIds.get(0)
+      Package pkg = new Package(getWarehouseId(order.getProducts().getIid())
               , order.getPid()
               , order.getX()
               , order.getY()
@@ -64,11 +64,15 @@ public class DealWebOrderService implements Runnable {
 
       // send purchase request to world
       try {
-        long seqNum = worldIO.sendAPurchaseMore(worldIO.warehouseIds.get(0), List.of(product));
+        long seqNum = worldIO.sendAPurchaseMore(pkg.getWarehouseId(), List.of(product));
           worldMessageDao.addOne(new WorldMessage(seqNum));
           productDao.setBuySeq(packageId, seqNum);          
       } catch (IOException e) {
           e.printStackTrace();
       }
+    }
+
+    public int getWarehouseId(long productId) {
+      return (int) (productId % WorldIO.getInstance().warehouseIds.size());
     }
 }
