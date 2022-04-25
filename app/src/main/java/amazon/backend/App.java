@@ -6,6 +6,7 @@ package amazon.backend;
 import amazon.backend.IO.*;
 import amazon.backend.manager.AckManager;
 import amazon.backend.manager.LogisticsManager;
+import amazon.backend.manager.ResendManager;
 import amazon.backend.manager.StatusManager;
 import org.hibernate.SessionFactory;
 
@@ -31,6 +32,7 @@ public class App {
         AckManager.newInstance(sessionFactory);
         LogisticsManager.newInstance();
         StatusManager.newInstance();
+        ResendManager.newInstance();
         WebListener.newInstance(WebIO.getInstance(), LogisticsManager.getInstance());
         WorldListener.newInstance(WorldIO.getInstance()
                 , AckManager.getInstance()
@@ -44,10 +46,12 @@ public class App {
         Thread webListener = new Thread(WebListener.getInstance(), "Web Listener");
         Thread worldListener = new Thread(WorldListener.getInstance(), "World Listener");
         Thread upsListener = new Thread(UpsListener.getInstance(), "Ups Listener");
+        Thread resendManager = new Thread(ResendManager.getInstance(), "Resend Manager")
 
         webListener.start();
         worldListener.start();
         upsListener.start();
+        resendManager.start();
     }
 
     public static void main(String[] args) throws IOException, InterruptedException {
