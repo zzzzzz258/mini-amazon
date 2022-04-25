@@ -302,7 +302,7 @@ c     * @param worldId
         try {
             if (bufferLock.tryLock(1, TimeUnit.SECONDS)) {
                 try {
-                    WorldAmazon.ACommands aCommands = bufferBuilder.setSimspeed(200).build();
+                    WorldAmazon.ACommands aCommands = bufferBuilder.setSimspeed(100).build();
                     logger.info("Send ACommands to world:\n" + aCommands);
                     sendToWorld(aCommands.toByteArray());
                     bufferBuilder.clear();

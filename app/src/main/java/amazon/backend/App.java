@@ -46,7 +46,7 @@ public class App {
         Thread webListener = new Thread(WebListener.getInstance(), "Web Listener");
         Thread worldListener = new Thread(WorldListener.getInstance(), "World Listener");
         Thread upsListener = new Thread(UpsListener.getInstance(), "Ups Listener");
-        Thread resendManager = new Thread(ResendManager.getInstance(), "Resend Manager")
+        Thread resendManager = new Thread(ResendManager.getInstance(), "Resend Manager");
 
         webListener.start();
         worldListener.start();
