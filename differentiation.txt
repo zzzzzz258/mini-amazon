@@ -5,6 +5,6 @@
 5. Buyers are able to save items in the cart and place them into "saved for later" if they do not want to purchase now.
 6. Buyers are able to send the order with their UPS account.
 7. Buyers are able to rank the products by their prices.
-8. Sellers are able to sell their own versions of products with different price and desribtion.
+8. Sellers are able to sell their own versions of products with different price and description.
 9. Sellers are able to create and manage products.
 10. Sellers are able to confirm the order and wait for the messages from world, which are matching of UPS account, update of tracking number and delivery status.
